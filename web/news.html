@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News — GetTennisSponsors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#0F4D34;--green-2:#15573C;--accent:#C8DC2B;--ink:#16241D;--muted:#6E756F;
+  --line:#E4E8E3;--line-2:#D2D8D0;--bg:#F4F6F3;--surface:#FFFFFF;--red:#B23A48;--blue:#2563A8;
+  --radius:14px;--shadow:0 1px 2px rgba(20,40,30,.05),0 8px 24px rgba(20,40,30,.06);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+a{color:var(--blue);}
+.flag{font-family:"Roboto Mono";font-size:10px;font-weight:700;color:#2c3a31;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;padding:1px 6px;}
+.topnav{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:15px;}
+.brand .dot{width:15px;height:15px;border-radius:50%;background:var(--accent);border:1.5px solid var(--green);}
+.brand a{color:inherit;text-decoration:none;}
+.topnav .links a{font-size:13px;font-weight:700;color:#2c3a31;margin-left:18px;text-decoration:none;}
+.wrap{max-width:1000px;margin:0 auto;padding:30px 22px 70px;}
+.head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:6px;}
+.h1{font-size:24px;font-weight:900;}
+.secsub{color:var(--muted);font-size:13px;margin-bottom:18px;}
+.btn{background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:10px 16px;border-radius:10px;}
+.btn.ghost{background:var(--surface);color:var(--green);border:1px solid var(--line-2);}
+.btn.sm{padding:6px 12px;font-size:12px;}
+.btn.red{background:var(--red);}
+.feed{display:flex;flex-direction:column;gap:14px;min-height:60px;}
+.ncard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;}
+.ncard .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:7px;}
+.badge{font-family:"Roboto Mono";font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:6px;}
+.badge.self{color:var(--green);background:#e6f0ea;}
+.badge.operator{color:var(--blue);background:#e6eef7;}
+.ncard h3{font-size:16.5px;font-weight:900;margin-bottom:6px;}
+.ncard p{font-size:13.5px;color:#2c3a31;line-height:1.75;}
+.ncard .src{font-size:12px;margin-top:8px;}
+.ncard .own{margin-top:10px;display:flex;gap:8px;}
+.loading,.empty{color:var(--muted);font-size:13px;padding:20px;}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:24px;}
+.panel h2{font-size:16px;font-weight:900;margin-bottom:4px;}
+.panel .fl{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;font-family:inherit;font-size:13.5px;background:var(--bg);}
+.field textarea{min-height:90px;resize:vertical;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pbtn{background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:12px 18px;border-radius:11px;}
+.pbtn:disabled{opacity:.6;cursor:default;}
+.who{font-size:12.5px;color:var(--muted);}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:120;background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:12px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;}
+.toast.on{opacity:1;transform:translateX(-50%);}
+.toast.err{background:var(--red);}
+@media(max-width:680px){.row2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <div class="brand"><span class="dot"></span><a href="./index.html">GetTennisSponsors</a></div>
+  <div class="links"><a href="./index.html#openings">Openings</a><a href="./news.html">News</a></div>
+</div>
+
+<div class="wrap">
+  <div class="head">
+    <div><div class="h1">News &amp; Press</div></div>
+    <div id="authbar"></div>
+  </div>
+  <div class="secsub">Sponsorship wins and tennis sponsorship news. Players, clubs and tournaments post their own; our team curates news worldwide.</div>
+
+  <!-- Poster panel (login required) -->
+  <div class="panel" id="poster"></div>
+
+  <!-- Public feed -->
+  <div class="feed" id="feed"><div class="loading">Loading news…</div></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="./shared/config.js"></script>
+<script type="module">
+import { supabase, requireConfig, countryName } from "./shared/supabase.js";
+const ATYPE={player:"Player",club:"Club",tournament:"Tournament",operator:"Operator",other:""};
+let toTimer;
+function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast on'+(err?' err':'');clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2800);}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fmtDate(d){try{return new Date(d).toISOString().slice(0,10);}catch(e){return '';}}
+let SESSION=null, EDIT_ID=null;
+
+async function init(){
+  if(!requireConfig())return;
+  const {data:{session}}=await supabase.auth.getSession();
+  SESSION=session;
+  renderAuth(); renderPoster();
+  await Promise.all([loadFeed(), SESSION?loadMine():Promise.resolve()]);
+  supabase.auth.onAuthStateChange((_e,s)=>{SESSION=s;renderAuth();renderPoster();loadMine();});
+}
+
+/* ---- auth ---- */
+function renderAuth(){
+  const el=document.getElementById('authbar');
+  if(SESSION){
+    el.innerHTML=`<span class="who">Signed in as ${esc(SESSION.user.email)}</span> <button class="btn ghost sm" id="logout">Sign out</button>`;
+    document.getElementById('logout').onclick=async()=>{await supabase.auth.signOut();SESSION=null;renderAuth();renderPoster();document.getElementById('mine')&&(document.getElementById('mine').innerHTML='');toast('Signed out');};
+  } else {
+    el.innerHTML='';
+  }
+}
+
+/* ---- poster panel ---- */
+function renderPoster(){
+  const p=document.getElementById('poster');
+  if(!SESSION){
+    p.innerHTML=`
+      <h2>Post your news</h2>
+      <div class="fl">Players, clubs and tournaments — sign in to post. You'll get a one-time login link by email (no password).</div>
+      <div class="row2">
+        <div class="field"><label>Email</label><input id="li-email" type="email" placeholder="you@example.com"></div>
+        <div class="field" style="display:flex;align-items:flex-end"><button class="pbtn" id="li-btn" style="width:100%">Send login link</button></div>
+      </div>`;
+    document.getElementById('li-btn').onclick=login;
+    return;
+  }
+  p.innerHTML=`
+    <h2 id="form-title">Post news</h2>
+    <div class="fl">Your post goes live immediately. You can edit or remove it any time. Our team may hide posts that need changes and email you.</div>
+    <div class="field"><label>Headline</label><input id="n-title" placeholder="e.g. ITF Maebashi Open secures title sponsor"></div>
+    <div class="row2">
+      <div class="field"><label>Posting as (name shown)</label><input id="n-author" placeholder="e.g. ITF Maebashi Open"></div>
+      <div class="field"><label>You are a…</label><select id="n-atype"><option value="tournament">Tournament</option><option value="club">Club</option><option value="player">Player</option><option value="other">Other</option></select></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Country (ISO, optional)</label><input id="n-country" maxlength="2" placeholder="JP"></div>
+      <div class="field"><label>Source link (optional)</label><input id="n-link" placeholder="https://…"></div>
+    </div>
+    <div class="field"><label>Story</label><textarea id="n-body" placeholder="What happened…"></textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="pbtn" id="n-btn">Publish</button>
+      <button class="btn ghost" id="n-cancel" style="display:none">Cancel edit</button>
+    </div>
+    <div id="mine" style="margin-top:22px"></div>`;
+  document.getElementById('n-btn').onclick=savePost;
+  document.getElementById('n-cancel').onclick=()=>{EDIT_ID=null;clearForm();};
+  loadMine();
+}
+async function login(){
+  const email=document.getElementById('li-email').value.trim();
+  if(!email){toast('Enter your email',true);return;}
+  const btn=document.getElementById('li-btn');btn.disabled=true;btn.textContent='Sending…';
+  const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:location.href}});
+  btn.disabled=false;btn.textContent='Send login link';
+  if(error){toast('Error: '+error.message,true);return;}
+  toast('Login link sent — check your email');
+}
+
+/* ---- create / edit ---- */
+function clearForm(){['n-title','n-author','n-country','n-link','n-body'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const t=document.getElementById('form-title');if(t)t.textContent='Post news';
+  const b=document.getElementById('n-btn');if(b)b.textContent='Publish';
+  const c=document.getElementById('n-cancel');if(c)c.style.display='none';}
+async function savePost(){
+  const title=document.getElementById('n-title').value.trim();
+  const author=document.getElementById('n-author').value.trim();
+  if(!title){toast('Headline required',true);return;}
+  if(!author){toast('Posting name required',true);return;}
+  const payload={
+    title, body:document.getElementById('n-body').value,
+    author_name:author, author_type:document.getElementById('n-atype').value,
+    country:document.getElementById('n-country').value.trim().toUpperCase()||null,
+    link_url:document.getElementById('n-link').value.trim()||null
+  };
+  const btn=document.getElementById('n-btn');btn.disabled=true;btn.textContent='Saving…';
+  let error;
+  if(EDIT_ID){ ({error}=await supabase.from('news_posts').update(payload).eq('id',EDIT_ID)); }
+  else { ({error}=await supabase.from('news_posts').insert(payload)); }
+  btn.disabled=false;btn.textContent=EDIT_ID?'Save changes':'Publish';
+  if(error){toast('Error: '+error.message,true);return;}
+  toast(EDIT_ID?'Updated':'Published');EDIT_ID=null;clearForm();
+  await Promise.all([loadFeed(),loadMine()]);
+}
+
+/* ---- my posts ---- */
+async function loadMine(){
+  if(!SESSION)return;
+  const box=document.getElementById('mine');if(!box)return;
+  const {data,error}=await supabase.from('news_posts').select('*').eq('owner_id',SESSION.user.id).order('created_at',{ascending:false});
+  if(error){box.innerHTML='';return;}
+  if(!data.length){box.innerHTML='<div class="who">You have no posts yet.</div>';return;}
+  box.innerHTML='<div class="who" style="margin-bottom:8px">Your posts</div>'+data.map(n=>`
+    <div class="ncard" style="margin-bottom:10px">
+      <div class="meta">${n.status==='hidden'?'<span class="badge" style="color:#B23A48;background:#f7e9eb">Hidden by team</span>':'<span class="badge self">Live</span>'} <span>${fmtDate(n.published_at||n.created_at)}</span></div>
+      <h3>${esc(n.title)}</h3>
+      <div class="own"><button class="btn ghost sm" data-edit="${n.id}">Edit</button><button class="btn red sm" data-del="${n.id}">Delete</button></div>
+    </div>`).join('');
+  box.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>startEdit(data.find(x=>x.id===b.dataset.edit)));
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>del(b.dataset.del));
+}
+function startEdit(n){EDIT_ID=n.id;
+  document.getElementById('n-title').value=n.title||'';
+  document.getElementById('n-author').value=n.author_name||'';
+  document.getElementById('n-atype').value=n.author_type||'other';
+  document.getElementById('n-country').value=n.country||'';
+  document.getElementById('n-link').value=n.link_url||'';
+  document.getElementById('n-body').value=n.body||'';
+  document.getElementById('form-title').textContent='Edit post';
+  document.getElementById('n-btn').textContent='Save changes';
+  document.getElementById('n-cancel').style.display='inline-block';
+  document.getElementById('poster').scrollIntoView({behavior:'smooth'});
+}
+async function del(id){
+  if(!confirm('Delete this post?'))return;
+  const {error}=await supabase.from('news_posts').delete().eq('id',id);
+  if(error){toast('Error: '+error.message,true);return;}
+  toast('Deleted');await Promise.all([loadFeed(),loadMine()]);
+}
+
+/* ---- public feed ---- */
+async function loadFeed(){
+  const {data,error}=await supabase.from('public_news').select('*').order('published_at',{ascending:false});
+  const feed=document.getElementById('feed');
+  if(error){feed.innerHTML='<div class="empty">Could not load news: '+error.message+'</div>';return;}
+  if(!data.length){feed.innerHTML='<div class="empty">No news yet.</div>';return;}
+  feed.innerHTML=data.map(n=>`
+    <div class="ncard">
+      <div class="meta">
+        <span class="badge ${n.source==='operator'?'operator':'self'}">${n.source==='operator'?'Curated':'Posted'}</span>
+        <strong style="color:#2c3a31">${esc(n.author_name)}</strong>
+        ${n.country?`<span class="flag">${esc(n.country)}</span>`:''}
+        <span>${fmtDate(n.published_at)}</span>
+      </div>
+      <h3>${esc(n.title)}</h3>
+      ${n.body?`<p>${esc(n.body)}</p>`:''}
+      ${n.link_url?`<div class="src">Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">${esc(n.link_url)}</a></div>`:''}
+    </div>`).join('');
+}
+init();
+</script>
+</body>
+</html>

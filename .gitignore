@@ -1,0 +1,7 @@
+# NOTE: web/shared/config.js holds only the Supabase anon key, which is a
+# PUBLIC client key. It IS committed on purpose so auto-deploy ships it.
+# Never commit the service_role key anywhere.
+
+# OS / editor
+.DS_Store
+Thumbs.db

@@ -1,0 +1,24 @@
+name: deploy-heteml
+
+# Auto-publish the public site to heteml on every push that touches web/.
+# No more manual FTP: edit -> commit -> push -> live.
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", ".github/workflows/deploy-heteml.yml"]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Upload web/ to heteml via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.HETEML_FTP_SERVER }}
+          username: ${{ secrets.HETEML_FTP_USERNAME }}
+          password: ${{ secrets.HETEML_FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./web/
+          server-dir: ${{ secrets.HETEML_SERVER_DIR }}

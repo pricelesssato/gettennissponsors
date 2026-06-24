@@ -1,0 +1,24 @@
+name: news-curation
+
+on:
+  schedule:
+    - cron: "0 22 * * *"   # daily 22:00 UTC (= 07:00 JST next day)
+  workflow_dispatch: {}      # allow manual run from the Actions tab
+
+jobs:
+  curate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install -r news-pipeline/requirements.txt
+      - name: Run curation
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MAX_PUBLISH: "10"
+        run: python news-pipeline/collect.py

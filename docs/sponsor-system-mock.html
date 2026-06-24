@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GetTennisSponsors — SPONSOR OS (mock)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#0F4D34; --green-2:#15573C; --accent:#C8DC2B;
+  --ink:#16241D; --muted:#6E756F; --line:#E4E8E3; --line-2:#D2D8D0;
+  --bg:#F4F6F3; --surface:#FFFFFF;
+  --amber:#B7791F; --blue:#2563A8; --red:#B23A48; --gray:#8A8F89;
+  --radius:14px; --shadow:0 1px 2px rgba(20,40,30,.05),0 8px 24px rgba(20,40,30,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;}
+.mono{font-family:"Roboto Mono",monospace;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;background:rgba(255,255,255,.8);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:.02em;}
+.brand .dot{width:15px;height:15px;border-radius:50%;background:var(--accent);border:1.5px solid var(--green);}
+.brand .sys{font-family:"Roboto Mono";font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.08em;margin-left:4px;}
+.modeswitch{display:flex;background:var(--bg);border:1px solid var(--line-2);border-radius:999px;padding:3px;gap:2px;}
+.modeswitch button{font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:999px;color:var(--muted);}
+.modeswitch button.on{background:var(--green);color:#fff;}
+
+/* ===== ADMIN ===== */
+.admin{display:flex;min-height:calc(100vh - 53px);}
+.sidebar{width:218px;flex:0 0 auto;background:var(--surface);border-right:1px solid var(--line);padding:14px 10px;}
+.nav b{display:block;font-family:"Roboto Mono";font-size:10px;letter-spacing:.14em;color:var(--muted);padding:10px 12px 6px;text-transform:uppercase;}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:#2c3a31;margin-bottom:1px;}
+.nav button .ic{width:16px;text-align:center;color:var(--muted);font-family:"Roboto Mono";font-size:12px;}
+.nav button:hover{background:var(--bg);}
+.nav button.on{background:var(--green);color:#fff;font-weight:700;}
+.nav button.on .ic{color:var(--accent);}
+.nav .badge{margin-left:auto;font-family:"Roboto Mono";font-size:10px;background:var(--accent);color:var(--green);border-radius:999px;padding:1px 7px;font-weight:700;}
+.main{flex:1 1 auto;padding:24px 28px 60px;overflow-x:hidden;}
+.screen{display:none;}
+.screen.on{display:block;animation:fade .2s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.h1{font-size:20px;font-weight:900;letter-spacing:.01em;}
+.sub{color:var(--muted);font-size:13px;margin-top:3px;}
+.head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+.btn{background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:9px 16px;border-radius:10px;}
+.btn.ghost{background:var(--surface);color:var(--green);border:1px solid var(--line-2);}
+.btn.sm{padding:6px 12px;font-size:12px;}
+
+/* KPI cards */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;box-shadow:var(--shadow);}
+.kpi .l{font-size:11.5px;color:var(--muted);font-weight:500;}
+.kpi .v{font-family:"Roboto Mono";font-weight:700;font-size:25px;color:var(--green);margin-top:7px;line-height:1;}
+.kpi .v small{font-size:13px;}
+.kpi .d{font-size:11px;color:var(--muted);margin-top:6px;}
+
+.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.card .ct{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+.card .ct h3{font-size:13.5px;font-weight:700;}
+.card .ct .m{font-family:"Roboto Mono";font-size:11px;color:var(--muted);}
+.card .bd{padding:6px 8px;}
+
+/* task / list rows */
+.row{display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:9px;}
+.row:hover{background:var(--bg);}
+.row+.row{border-top:1px solid var(--line);}
+.row .when{font-family:"Roboto Mono";font-size:11px;color:var(--muted);width:54px;flex:0 0 auto;}
+.row .tt{font-size:13px;font-weight:500;flex:1;}
+.row .co{font-size:12px;color:var(--muted);}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{font-family:"Roboto Mono";font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line-2);}
+.tbl td{padding:12px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle;}
+.tbl tr:hover td{background:var(--bg);cursor:pointer;}
+.tbl .name{font-weight:700;}
+.muted{color:var(--muted);font-size:12px;}
+.amt{font-family:"Roboto Mono";font-weight:700;}
+.flag{font-family:"Roboto Mono";font-size:10px;font-weight:700;color:#2c3a31;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;padding:1px 6px;letter-spacing:.04em;}
+
+/* tabs (inventory types / site filter) */
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line-2);border-radius:12px;padding:4px;margin-bottom:16px;width:fit-content;flex-wrap:wrap;}
+.tabs button{font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:9px;color:var(--muted);}
+.tabs button.on{background:var(--green);color:#fff;}
+.tabs button .n{font-family:"Roboto Mono";font-size:10px;opacity:.7;margin-left:5px;}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+.p-cand{color:var(--gray);background:#f0f1ef;}
+.p-nego{color:var(--amber);background:#fbf3e3;}
+.p-deal{color:var(--green);background:#e6f0ea;}
+.p-renew{color:var(--blue);background:#e6eef7;}
+.p-lost{color:var(--red);background:#f7e9eb;}
+.p-draft{color:var(--gray);background:#f0f1ef;}
+.p-pending{color:var(--amber);background:#fbf3e3;}
+.p-pub{color:var(--green);background:#e6f0ea;}
+.tag{display:inline-block;font-size:11px;background:var(--bg);border:1px solid var(--line-2);border-radius:7px;padding:2px 8px;margin:2px 3px 2px 0;color:#2c3a31;}
+.cat{font-family:"Roboto Mono";font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;}
+.cat.A{color:#1f6b4a;background:#e6f0ea;} .cat.B{color:#2563A8;background:#e6eef7;}
+.cat.C{color:#8a5a1f;background:#fbf3e3;} .cat.D{color:#9a3550;background:#f7e9eb;}
+
+/* kanban */
+.kanban{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;}
+.col{flex:0 0 250px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);}
+.col .ch{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700;}
+.col .ch .n{font-family:"Roboto Mono";color:var(--muted);font-size:11px;}
+.col .cb{padding:10px;display:flex;flex-direction:column;gap:10px;min-height:60px;}
+.dcard{border:1px solid var(--line-2);border-radius:11px;padding:11px 12px;background:var(--surface);}
+.dcard:hover{border-color:var(--green);box-shadow:0 4px 12px rgba(15,77,52,.1);}
+.dcard .co{font-weight:700;font-size:13px;}
+.dcard .pr{font-size:11.5px;color:var(--muted);margin:4px 0 8px;}
+.dcard .ft{display:flex;justify-content:space-between;align-items:center;}
+.dcard .ft .amt{font-size:12.5px;color:var(--green);}
+
+/* metric blocks (reports) */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;}
+.metric{border:1px solid var(--line);border-radius:11px;padding:12px;text-align:center;}
+.metric .v{font-family:"Roboto Mono";font-weight:700;font-size:21px;color:var(--green);}
+.metric .l{font-size:11px;color:var(--muted);margin-top:4px;}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,30,25,.34);z-index:80;opacity:0;pointer-events:none;transition:.22s;}
+.scrim.on{opacity:1;pointer-events:auto;}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(470px,94vw);background:var(--surface);z-index:90;
+  transform:translateX(102%);transition:.26s cubic-bezier(.4,0,.2,1);overflow-y:auto;box-shadow:-8px 0 30px rgba(20,40,30,.16);}
+.drawer.on{transform:none;}
+.dh{position:sticky;top:0;background:var(--surface);padding:18px 20px 14px;border-bottom:1px solid var(--line);}
+.dh .x{position:absolute;top:16px;right:16px;font-size:20px;color:var(--muted);width:30px;height:30px;border-radius:8px;}
+.dh .x:hover{background:var(--bg);}
+.db{padding:18px 20px 40px;}
+.sec{margin-bottom:18px;}
+.sec .st{font-family:"Roboto Mono";font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line);}
+.kv .k{color:var(--muted);}
+.kv .v{font-weight:500;text-align:right;}
+.feebox{background:var(--bg);border:1px solid var(--line-2);border-radius:12px;padding:14px;}
+.feebox .r{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;align-items:center;}
+.feebox .r.tot{border-top:1px dashed var(--line-2);margin-top:6px;padding-top:8px;font-weight:700;color:var(--green);}
+.feebox select,.feebox input{font-family:"Roboto Mono";font-size:12px;border:1px solid var(--line-2);border-radius:7px;padding:3px 6px;background:var(--surface);width:84px;text-align:right;}
+.feebox .basis{font-size:11px;color:var(--muted);margin-top:8px;display:flex;justify-content:space-between;align-items:center;}
+.feebox .basis select{width:auto;text-align:left;font-family:inherit;}
+.timeline .ti{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px;}
+.timeline .ti .dt{font-family:"Roboto Mono";font-size:11px;color:var(--muted);width:46px;flex:0 0 auto;}
+.drawer .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.suggest{border:1px dashed var(--line-2);border-radius:10px;padding:10px 12px;font-size:12px;color:#2c3a31;background:#fbfcfa;}
+.suggest b{color:var(--green);}
+
+/* ===== PUBLIC SITE (GetTennisSponsors) ===== */
+.site{display:none;}
+.site.on{display:block;}
+.hero{background:linear-gradient(135deg,var(--green),var(--green-2));color:#fff;padding:46px 22px 40px;text-align:center;}
+.hero .ey{font-family:"Roboto Mono";font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);}
+.hero h1{font-size:30px;font-weight:900;margin:10px 0 8px;letter-spacing:.01em;}
+.hero p{font-size:14px;opacity:.9;max-width:560px;margin:0 auto;line-height:1.7;}
+.hero .cta{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.hero .cta button{font-weight:700;font-size:13.5px;padding:12px 20px;border-radius:11px;}
+.hero .cta .primary{background:var(--accent);color:var(--green);}
+.hero .cta .secondary{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 22px 70px;}
+.sechead{font-size:18px;font-weight:900;margin-bottom:4px;}
+.secsub{color:var(--muted);font-size:13px;margin-bottom:16px;}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.filters select{border:1px solid var(--line-2);border-radius:9px;padding:8px 11px;font-family:inherit;font-size:13px;background:var(--surface);}
+.catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.scard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;}
+.scard .ty{font-family:"Roboto Mono";font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);}
+.scard .nm{font-weight:900;font-size:15.5px;margin:6px 0 2px;}
+.scard .lo{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.scard .ds{font-size:12.5px;color:#2c3a31;line-height:1.7;flex:1;}
+.scard .sb{margin-top:12px;display:flex;justify-content:space-between;align-items:center;}
+.scard .tiers{font-size:11px;color:var(--muted);}
+.scard .ask{width:100%;margin-top:12px;background:var(--green);color:#fff;font-weight:700;font-size:12.5px;padding:10px;border-radius:9px;}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;}
+.fcard h3{font-size:15px;font-weight:900;margin-bottom:4px;}
+.fcard .fl{font-size:12.5px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;font-family:inherit;font-size:13.5px;background:var(--bg);}
+.field textarea{min-height:64px;resize:vertical;}
+.pbtn{width:100%;background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:13px;border-radius:12px;margin-top:4px;}
+.about{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-top:28px;text-align:center;}
+.about .by{font-family:"Roboto Mono";font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
+.about h3{font-size:17px;font-weight:900;margin:8px 0;}
+.about p{font-size:13px;color:#2c3a31;line-height:1.8;max-width:620px;margin:0 auto;}
+.sitefoot{text-align:center;color:var(--muted);font-size:11.5px;padding:24px;border-top:1px solid var(--line);}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:120;
+  background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:12px 20px;border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;}
+.toast.on{opacity:1;transform:translateX(-50%);}
+.toast b{color:var(--accent);}
+
+@media(max-width:820px){
+  .admin{flex-direction:column;}
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--line);display:flex;gap:4px;overflow-x:auto;padding:8px;}
+  .nav{display:flex;gap:4px;}
+  .nav b{display:none;}
+  .nav button{white-space:nowrap;padding:8px 12px;}
+  .nav button .badge{display:none;}
+  .main{padding:18px 14px 60px;}
+  .grid2{grid-template-columns:1fr;}
+  .twocol{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span>GetTennisSponsors<span class="sys">SPONSOR&nbsp;OS</span></div>
+  <div class="modeswitch">
+    <button id="m-admin" class="on" onclick="setMode('admin')">Admin Console</button>
+    <button id="m-site" onclick="setMode('site')">Public Site</button>
+  </div>
+</div>
+
+<!-- ========== ADMIN ========== -->
+<div class="admin" id="adminView">
+  <aside class="sidebar">
+    <nav class="nav">
+      <b>Manage</b>
+      <button class="on" data-s="dash" onclick="nav('dash')"><span class="ic">▢</span>Dashboard</button>
+      <button data-s="inv" onclick="nav('inv')"><span class="ic">◷</span>Inventory<span class="badge">10</span></button>
+      <button data-s="pipe" onclick="nav('pipe')"><span class="ic">≣</span>Pipeline</button>
+      <button data-s="reports" onclick="nav('reports')"><span class="ic">◰</span>Reports</button>
+      <button data-s="renew" onclick="nav('renew')"><span class="ic">↻</span>Renewals<span class="badge">2</span></button>
+      <button data-s="refs" onclick="nav('refs')"><span class="ic">⤷</span>Referrals<span class="badge">3</span></button>
+    </nav>
+  </aside>
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="screen on" id="dash">
+      <div class="head"><div><div class="h1">Dashboard</div><div class="sub">June 2026 · overview</div></div>
+        <button class="btn" onclick="toast('New deal created')">＋ New deal</button></div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">Published openings</div><div class="v">8</div><div class="d">of 10 listed · 2 pending review</div></div>
+        <div class="kpi"><div class="l">Active deals</div><div class="v">7</div><div class="d">3 prospect · 2 negotiating · 2 live</div></div>
+        <div class="kpi"><div class="l">Pipeline value</div><div class="v"><small>¥</small>8.6<small>M</small></div><div class="d">weighted ¥3.1M</div></div>
+        <div class="kpi"><div class="l">Est. TC fee (20%)</div><div class="v"><small>¥</small>1.72<small>M</small></div><div class="d">before agent payout</div></div>
+        <div class="kpi"><div class="l">Renewals this month</div><div class="v">2</div><div class="d">1 due within 7 days</div></div>
+      </div>
+      <div class="grid2">
+        <div class="card">
+          <div class="ct"><h3>Tasks to action</h3><span class="m">5</span></div>
+          <div class="bd">
+            <div class="row" onclick="openDeal('d1')"><span class="when">6/10</span><span class="tt">Yamada Sports — send proposal</span><span class="pill p-nego">Negotiating</span></div>
+            <div class="row" onclick="nav('renew')"><span class="when">6/12</span><span class="tt">Gunma Seikotsu Group — renewal proposal due</span><span class="pill p-renew">Renewal</span></div>
+            <div class="row" onclick="openDeal('d2')"><span class="when">6/13</span><span class="tt">Aozora Foods — schedule discovery call</span><span class="pill p-cand">Prospect</span></div>
+            <div class="row" onclick="nav('reports')"><span class="when">6/15</span><span class="tt">Maebashi Tech — build results report</span><span class="pill p-deal">Live</span></div>
+            <div class="row" onclick="nav('refs')"><span class="when">6/16</span><span class="tt">Referral (Tanaka) — first contact</span><span class="pill p-cand">New</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct"><h3>Recent referrals</h3><span class="m">from agents</span></div>
+          <div class="bd">
+            <div class="row"><span class="tt">Takuya Tanaka<div class="co">→ Aozora Foods (Food · JP)</div></span><span class="pill p-cand">New</span></div>
+            <div class="row"><span class="tt">Rei Sasaki<div class="co">→ North Resort (Travel · JP)</div></span><span class="pill p-nego">In deal</span></div>
+            <div class="row"><span class="tt">M. Wong<div class="co">→ Apex Rackets (Equipment · SG)</div></span><span class="pill p-deal">Won</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INVENTORY (sponsorables) -->
+    <section class="screen" id="inv">
+      <div class="head"><div><div class="h1">Inventory — Sponsorables</div><div class="sub">Players, clubs, tournaments & more seeking sponsors</div></div>
+        <button class="btn ghost" onclick="toast('Add sponsorable')">＋ Add sponsorable</button></div>
+      <div class="tabs" id="invtabs">
+        <button class="on" data-t="player" onclick="invTab('player')">Players<span class="n" id="n-player"></span></button>
+        <button data-t="club" onclick="invTab('club')">Clubs<span class="n" id="n-club"></span></button>
+        <button data-t="tournament" onclick="invTab('tournament')">Tournaments<span class="n" id="n-tournament"></span></button>
+        <button data-t="other" onclick="invTab('other')">Other<span class="n" id="n-other"></span></button>
+      </div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>Name</th><th>Country</th><th id="th-detail">Detail</th><th>Tiers / slots</th><th>Asking range</th><th>Status</th></tr></thead>
+        <tbody id="invbody"></tbody>
+      </table></div>
+      <div class="suggest" style="margin-top:14px">Tip: open a deal to see <b>suggested sponsorables</b> matched to that company's need category (A/B/C/D).</div>
+    </section>
+
+    <!-- PIPELINE -->
+    <section class="screen" id="pipe">
+      <div class="head"><div><div class="h1">Pipeline</div><div class="sub">Prospect → Negotiating → Contracted / Live → Renewal</div></div>
+        <button class="btn ghost sm" onclick="toast('Switch to list view')">View: Board ▾</button></div>
+      <div class="kanban">
+        <div class="col"><div class="ch">Prospect<span class="n">3</span></div><div class="cb">
+          <div class="dcard" onclick="openDeal('d2')"><div class="co">Aozora Foods <span class="cat A">A</span></div><div class="pr">ITF Maebashi Open · trial/sampling</div><div class="ft"><span class="amt mono">¥0.6M</span><span class="pill p-cand">Prospect</span></div></div>
+          <div class="dcard" onclick="openDeal('d5')"><div class="co">North Resort <span class="cat B">B</span></div><div class="pr">Takasaki · awareness/intl</div><div class="ft"><span class="amt mono">¥0.4M</span><span class="pill p-cand">Prospect</span></div></div>
+          <div class="dcard" onclick="toast('Minami Dental detail')"><div class="co">Minami Dental <span class="cat B">B</span></div><div class="pr">Yuki Nakamura (player) · expertise</div><div class="ft"><span class="amt mono">¥0.3M</span><span class="pill p-cand">Prospect</span></div></div>
+        </div></div>
+        <div class="col"><div class="ch">Negotiating<span class="n">2</span></div><div class="cb">
+          <div class="dcard" onclick="openDeal('d1')"><div class="co">Yamada Sports <span class="cat A">A</span></div><div class="pr">ITF Asia Circuit · leads+awareness</div><div class="ft"><span class="amt mono">¥1.2M</span><span class="pill p-nego">Negotiating</span></div></div>
+          <div class="dcard" onclick="toast('Kaneko Construction detail')"><div class="co">Kaneko Construction <span class="cat C">C</span></div><div class="pr">Maebashi TC (club) · recruiting</div><div class="ft"><span class="amt mono">¥0.8M</span><span class="pill p-nego">Negotiating</span></div></div>
+        </div></div>
+        <div class="col"><div class="ch">Contracted / Live<span class="n">2</span></div><div class="cb">
+          <div class="dcard" onclick="openDeal('d3')"><div class="co">Maebashi Tech <span class="cat C">C</span></div><div class="pr">ITF Maebashi Open · employer brand</div><div class="ft"><span class="amt mono">¥0.9M</span><span class="pill p-deal">Live</span></div></div>
+          <div class="dcard" onclick="toast('Apex Rackets detail')"><div class="co">Apex Rackets <span class="cat B">B</span></div><div class="pr">ITF Asia Circuit · intl+expertise</div><div class="ft"><span class="amt mono">¥1.5M</span><span class="pill p-deal">Live</span></div></div>
+        </div></div>
+        <div class="col"><div class="ch">Renewal<span class="n">2</span></div><div class="cb">
+          <div class="dcard" onclick="openDeal('d4')"><div class="co">Gunma Seikotsu G <span class="cat B">B</span></div><div class="pr">ITF Maebashi Open · CSR+expertise</div><div class="ft"><span class="amt mono">¥0.5M</span><span class="pill p-renew">Due 7d</span></div></div>
+          <div class="dcard" onclick="toast('Joshu Logistics detail')"><div class="co">Joshu Logistics <span class="cat C">C</span></div><div class="pr">ITF Takasaki · recruiting</div><div class="ft"><span class="amt mono">¥0.6M</span><span class="pill p-renew">Due 30d</span></div></div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section class="screen" id="reports">
+      <div class="head"><div><div class="h1">Reports</div><div class="sub">Progress & results reports (QR, promo codes, app-measured actuals)</div></div>
+        <button class="btn" onclick="toast('New report')">＋ New report</button></div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="ct"><h3>Maebashi Tech — Results report (H1 2026)</h3><span class="pill p-draft">Draft</span></div>
+        <div class="bd" style="padding:16px">
+          <div class="metrics">
+            <div class="metric"><div class="v">182</div><div class="l">QR scans</div></div>
+            <div class="metric"><div class="v">37</div><div class="l">Promo code uses</div></div>
+            <div class="metric"><div class="v">14</div><div class="l">Job applications</div></div>
+            <div class="metric"><div class="v">+22%</div><div class="l">Careers page traffic</div></div>
+            <div class="metric"><div class="v">9.4k</div><div class="l">Digital impressions</div></div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn sm ghost" onclick="toast('View 6 evidence files')">Evidence · 6</button>
+            <button class="btn sm" onclick="toast('Results report sent to sponsor')">Send to sponsor</button>
+          </div>
+        </div>
+      </div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>Sponsor</th><th>Kind</th><th>Period</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr onclick="toast('Maebashi Tech results report')"><td class="name">Maebashi Tech</td><td>Results</td><td>H1 2026</td><td><span class="pill p-draft">Draft</span></td></tr>
+          <tr onclick="toast('Apex progress report')"><td class="name">Apex Rackets</td><td>Progress</td><td>May 2026</td><td><span class="pill p-renew">Sent</span></td></tr>
+          <tr onclick="toast('Gunma Seikotsu results report')"><td class="name">Gunma Seikotsu Group</td><td>Results</td><td>FY2025</td><td><span class="pill p-renew">Sent</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- RENEWALS -->
+    <section class="screen" id="renew">
+      <div class="head"><div><div class="h1">Renewals</div><div class="sub">Contracts nearing renewal, and renewal proposals</div></div></div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>Sponsor</th><th>Current</th><th>Renews</th><th>Left</th><th>Last results</th><th></th></tr></thead>
+        <tbody>
+          <tr onclick="openDeal('d4')"><td class="name">Gunma Seikotsu Group</td><td>1yr ¥0.5M</td><td>2026/06/17</td><td><span class="pill p-renew">7d</span></td><td class="muted">recall +12% / visits ↑</td><td><button class="btn sm" onclick="event.stopPropagation();toast('Renewal proposal generated')">Renewal proposal</button></td></tr>
+          <tr onclick="toast('Joshu Logistics renewal')"><td class="name">Joshu Logistics</td><td>1yr ¥0.6M</td><td>2026/07/10</td><td><span class="pill p-renew">30d</span></td><td class="muted">applications +18%</td><td><button class="btn sm ghost" onclick="event.stopPropagation();toast('Multi-year plan proposed')">Multi-year plan</button></td></tr>
+        </tbody>
+      </table></div>
+      <div class="suggest" style="margin-top:14px">Renewal proposals are generated from last period's <b>results report</b>. Push 1-year → <b>multi-year (auto-renew · right-to-match)</b> to compound the account.</div>
+    </section>
+
+    <!-- REFERRALS -->
+    <section class="screen" id="refs">
+      <div class="head"><div><div class="h1">Referrals</div><div class="sub">Agent-sourced sponsor leads (new → contacted → in deal → won → payout). Demand-side only.</div></div></div>
+      <div class="card"><table class="tbl">
+        <thead><tr><th>Agent</th><th>Referred company</th><th>Status</th><th>Linked deal</th><th>Expected payout</th></tr></thead>
+        <tbody>
+          <tr onclick="openDeal('d2')"><td class="name">Takuya Tanaka</td><td>Aozora Foods<span class="muted"><br>Food · JP</span></td><td><span class="pill p-cand">New</span></td><td class="muted">not linked</td><td class="amt">—</td></tr>
+          <tr onclick="openDeal('d5')"><td class="name">Rei Sasaki</td><td>North Resort<span class="muted"><br>Travel · JP</span></td><td><span class="pill p-nego">In deal</span></td><td class="muted">#d5</td><td class="amt">¥0.03M (7%)</td></tr>
+          <tr onclick="toast('Apex referral detail')"><td class="name">M. Wong</td><td>Apex Rackets<span class="muted"><br>Equipment · SG</span></td><td><span class="pill p-deal">Won</span></td><td class="muted">#apex</td><td class="amt">¥0.12M (8%)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="suggest" style="margin-top:14px"><b>Closing is handled by the operator (Sato).</b> Agents only introduce the sponsor company. Payout = <b>5–10%</b> of the deal value, paid from TC's 20% fee, on the initial term only (configurable per deal).</div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ========== PUBLIC SITE (GetTennisSponsors) ========== -->
+<div class="site" id="siteView">
+  <div class="hero">
+    <div class="ey">Tennis Sponsorship Marketplace</div>
+    <h1>Get Tennis Sponsors</h1>
+    <p>The dedicated marketplace connecting tennis players, clubs and tournaments with sponsors worldwide. Browse who's looking for backing — or list your own opening.</p>
+    <div class="cta">
+      <button class="primary" onclick="scrollTo2('apply')">List your sponsorship opening</button>
+      <button class="secondary" onclick="scrollTo2('consult')">Become a sponsor</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="sechead">Currently seeking sponsors</div>
+    <div class="secsub">A teaser of openings. Contact and amounts are handled privately by our team.</div>
+    <div class="filters">
+      <select id="f-type" onchange="renderCatalog()">
+        <option value="all">All types</option>
+        <option value="player">Players</option>
+        <option value="club">Clubs</option>
+        <option value="tournament">Tournaments</option>
+        <option value="other">Other</option>
+      </select>
+      <select id="f-country" onchange="renderCatalog()">
+        <option value="all">All countries</option>
+        <option value="JP">Japan</option>
+        <option value="SG">Singapore</option>
+        <option value="TH">Thailand</option>
+        <option value="GB">United Kingdom</option>
+      </select>
+    </div>
+    <div class="catalog" id="catalog"></div>
+
+    <div class="twocol" id="forms">
+      <div class="fcard" id="apply">
+        <h3>List your sponsorship opening</h3>
+        <div class="fl">For players, clubs and tournaments seeking sponsors. Submissions are reviewed before going live.</div>
+        <div class="field"><label>Type</label><select><option>Player</option><option>Club</option><option>Tournament</option><option>Other</option></select></div>
+        <div class="field"><label>Name</label><input placeholder="e.g. Yuki Nakamura"></div>
+        <div class="field"><label>Country</label><select><option>Japan</option><option>Singapore</option><option>Thailand</option><option>United Kingdom</option><option>Other</option></select></div>
+        <div class="field"><label>What sponsors get / your reach</label><textarea placeholder="Ranking, audience, events, social reach…"></textarea></div>
+        <div class="field"><label>Contact email</label><input placeholder="you@example.com"></div>
+        <button class="pbtn" onclick="toast('Submitted for review (status: pending)')">Submit for review</button>
+      </div>
+      <div class="fcard" id="consult">
+        <h3>Become a sponsor</h3>
+        <div class="fl">Tell us what you want from a tennis partnership and we'll match you to the right opening.</div>
+        <div class="field"><label>Company</label><input placeholder="Company name"></div>
+        <div class="field"><label>Country</label><select><option>Japan</option><option>Singapore</option><option>United States</option><option>Other</option></select></div>
+        <div class="field"><label>What's your goal?</label><select><option>A · Sales & leads</option><option>B · Brand & trust</option><option>C · People & recruiting</option><option>D · Milestone / occasion</option></select></div>
+        <div class="field"><label>Anything specific?</label><textarea placeholder="Budget range, target audience, a player/event you like…"></textarea></div>
+        <div class="field"><label>Contact email</label><input placeholder="you@company.com"></div>
+        <button class="pbtn" onclick="toast('Consultation request sent')">Request a consultation</button>
+      </div>
+    </div>
+
+    <div class="about">
+      <div class="by">Powered by Tennis Collective</div>
+      <h3>Built and run by the team behind Tennis Collective</h3>
+      <p>GetTennisSponsors is operated by Tennis Collective — the global tennis app and community. That means real reach, real measurement (QR, promo codes, in-app tracking), and a team that handles outreach, proposals and contracts end-to-end. Sponsors get accountability; players, clubs and tournaments get backing.</p>
+    </div>
+  </div>
+  <div class="sitefoot">© 2026 GetTennisSponsors · operated by Tennis Collective · English</div>
+</div>
+
+<!-- DRAWER -->
+<div class="scrim" id="scrim" onclick="closeDeal()"></div>
+<aside class="drawer" id="drawer">
+  <div class="dh"><button class="x" onclick="closeDeal()">×</button>
+    <div id="d-stage"></div>
+    <div class="h1" id="d-co" style="margin-top:8px"></div>
+    <div class="sub" id="d-meta"></div>
+  </div>
+  <div class="db" id="d-body"></div>
+</aside>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Sponsorables (single table, type-discriminated) ===== */
+const SPONSORABLES=[
+ {id:"p1",type:"player",name:"Yuki Nakamura",country:"JP",detail:"ITF #420 · rising junior · 12k IG",tiers:"Apparel · Racquet · Social",ask:"¥0.3–0.8M",status:"published",
+   summary:"Rising Japanese junior climbing the ITF ranks. Strong, growing social following — a fit for brands wanting an authentic, early athlete story."},
+ {id:"p2",type:"player",name:"Mei Tanaka",country:"JP",detail:"National U18 champion · 28k followers",tiers:"Apparel · Equipment",ask:"¥0.5–1.2M",status:"published",
+   summary:"National U18 champion with an engaged audience. Ideal for brands targeting youth, family and aspirational sport."},
+ {id:"p3",type:"player",name:"Liam Carter",country:"GB",detail:"Wheelchair tennis · world #15",tiers:"Apparel · Travel · Social",ask:"£3–9k",status:"pending",
+   summary:"Top-20 wheelchair player with a powerful inclusion & resilience narrative. Excellent CSR and brand-values alignment."},
+ {id:"c1",type:"club",name:"Maebashi Tennis Club",country:"JP",detail:"800 members · 12 courts · Gunma",tiers:"Naming · Court · Event",ask:"¥0.4–1.5M",status:"published",
+   summary:"Established regional club with 800 members and steady local footfall. Great for businesses wanting durable local awareness and goodwill."},
+ {id:"c2",type:"club",name:"Bangkok Smash Academy",country:"TH",detail:"Junior academy · 300 students",tiers:"Naming · Apparel · Event",ask:"$5–15k",status:"published",
+   summary:"Fast-growing junior academy in Bangkok. A way into the Southeast Asian youth tennis market with kit and event branding."},
+ {id:"t1",type:"tournament",name:"ITF Maebashi Open",country:"JP",detail:"Jul 2026 · Gunma · hard court · ITF",tiers:"Title · Main · Support · Supplier",ask:"¥0.4–1.5M",status:"published",
+   summary:"International ITF tournament in Gunma, Japan. On-site exposure plus year-round digital exposure and measured results."},
+ {id:"t2",type:"tournament",name:"ITF Asia Circuit Package",country:"SG",detail:"Jul–Dec 2026 · 5 events across Asia",tiers:"Title · Main",ask:"¥3.0–6.0M",status:"published",
+   summary:"Six months of pan-Asian exposure across five ITF events in one package. Built for brands expanding across Asia."},
+ {id:"t3",type:"tournament",name:"ITF Takasaki Challenge",country:"JP",detail:"Sep 2026 · Gunma",tiers:"Main · Support",ask:"¥0.3–0.9M",status:"published",
+   summary:"ITF tournament with recruiting-booth and community options. A fit for employer branding and local presence."},
+ {id:"o1",type:"other",name:"Junior Development Program",country:"JP",detail:"Grassroots · 6 prefectures",tiers:"Naming · Scholarship",ask:"¥1.0–3.0M",status:"published",
+   summary:"A grassroots junior development program across six prefectures. Long-term CSR and pipeline-building for community-minded brands."},
+ {id:"o2",type:"other",name:'AceCam (tennis creator)',country:"JP",detail:"YouTube 85k · technique content",tiers:"Integration · Product",ask:"¥0.2–0.6M",status:"pending",
+   summary:"Popular tennis technique creator on YouTube. Product placement and integrated content for equipment and lifestyle brands."}
+];
+const TYPE_LABEL={player:"Player",club:"Club",tournament:"Tournament",other:"Other"};
+const COUNTRY={JP:"Japan",SG:"Singapore",TH:"Thailand",GB:"United Kingdom",US:"United States"};
+const DETAIL_HEAD={player:"Player detail",club:"Club detail",tournament:"Event detail",other:"Detail"};
+
+/* ===== Admin: inventory tabs ===== */
+let invType="player";
+function invTab(t){invType=t;
+  document.querySelectorAll('#invtabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.getElementById('th-detail').textContent=DETAIL_HEAD[t];
+  const rows=SPONSORABLES.filter(s=>s.type===t).map(s=>{
+    const st=s.status==='published'?'<span class="pill p-pub">Published</span>'
+            :s.status==='pending'?'<span class="pill p-pending">Pending review</span>'
+            :'<span class="pill p-draft">Draft</span>';
+    return `<tr onclick="toast('${s.name.replace(/'/g,"")} detail')">
+      <td class="name">${s.name}</td>
+      <td><span class="flag">${s.country}</span> <span class="muted">${COUNTRY[s.country]||s.country}</span></td>
+      <td class="muted">${s.detail}</td>
+      <td><span class="muted">${s.tiers}</span></td>
+      <td class="amt">${s.ask}</td>
+      <td>${st}</td></tr>`;}).join('');
+  document.getElementById('invbody').innerHTML=rows||'<tr><td colspan="6" class="muted" style="padding:24px;text-align:center">No sponsorables of this type yet.</td></tr>';}
+function refreshInvCounts(){['player','club','tournament','other'].forEach(t=>{
+  document.getElementById('n-'+t).textContent=SPONSORABLES.filter(s=>s.type===t).length;});}
+
+/* ===== Deals ===== */
+const DEALS={
+  d1:{co:"Yamada Sports",stage:'<span class="pill p-nego">Negotiating</span>',cat:"A · Sales & leads",
+    meta:"ITF Asia Circuit · owner: Sato",cur:"¥",amount:1200000,tcPct:20,agPct:0,basis:"initial_term",
+    acts:[["6/02","First reply via form outreach — interested"],["6/06","Online call · discovery (leads + awareness)"],["6/10","Send proposal ← to action"]],
+    activ:["③ Drive traffic","④ Awareness/recall","⑪ Content supply"],contract:"Not signed (negotiating)",ref:"None (direct)",
+    suggest:"ITF Asia Circuit Package · ITF Maebashi Open"},
+  d2:{co:"Aozora Foods",stage:'<span class="pill p-cand">Prospect</span>',cat:"A · Sales & leads",
+    meta:"ITF Maebashi Open · referral: T. Tanaka",cur:"¥",amount:600000,tcPct:20,agPct:5,basis:"initial_term",
+    acts:[["6/08","Referral received from Tanaka"],["6/13","Scheduling discovery call ← to action"]],
+    activ:["① Trial / sampling","⑫ Anniversary sale tie-in"],contract:"—",ref:"Takuya Tanaka (referral · 5%)",
+    suggest:"ITF Maebashi Open · Mei Tanaka (player)"},
+  d3:{co:"Maebashi Tech",stage:'<span class="pill p-deal">Live</span>',cat:"C · People & recruiting",
+    meta:"ITF Maebashi Open · owner: Sato",cur:"¥",amount:900000,tcPct:20,agPct:0,basis:"initial_term",
+    acts:[["3/10","Contract signed (1-year)"],["5/20","Recruiting booth run · evidence uploaded"],["6/15","Build results report ← to action"]],
+    activ:["⑨ Employer branding","④ Awareness/recall","⑪ Content supply"],contract:"1yr / 2026.3–2027.2 / no auto-renew",ref:"None",
+    suggest:"Maebashi Tennis Club · Junior Development Program"},
+  d4:{co:"Gunma Seikotsu Group",stage:'<span class="pill p-renew">Renewal (7d left)</span>',cat:"B · Brand & trust",
+    meta:"ITF Maebashi Open · owner: Sato",cur:"¥",amount:500000,tcPct:20,agPct:0,basis:"initial_term",
+    acts:[["2025/06","Initial-year contract"],["2025/12","Results report sent (recall +12% · more visits)"],["6/17","Renewal due ← generate proposal"]],
+    activ:["⑤ Proof of expertise","⑥ CSR / community"],contract:"1yr / renews 2026.6.17 / proposing multi-year",ref:"None",
+    suggest:"Maebashi Tennis Club · ITF Maebashi Open"},
+  d5:{co:"North Resort",stage:'<span class="pill p-cand">Prospect (referral · in deal)</span>',cat:"B · Brand & trust",
+    meta:"ITF Takasaki Challenge · referral: R. Sasaki",cur:"¥",amount:400000,tcPct:20,agPct:7,basis:"initial_term",
+    acts:[["6/02","Referral received from Sasaki"],["6/05","Moved to deal · first contact"]],
+    activ:["④ Awareness/recall","⑦ International touchpoint"],contract:"—",ref:"Rei Sasaki (referral · 7%)",
+    suggest:"ITF Takasaki Challenge · ITF Asia Circuit Package"}
+};
+function fmt(cur,n){return cur+(n).toLocaleString('en-US');}
+function renderFee(id){const d=DEALS[id];
+  const tcAmt=Math.round(d.amount*d.tcPct/100);
+  const agAmt=Math.round(d.amount*d.agPct/100);
+  const net=tcAmt-agAmt;
+  return `<div class="feebox">
+    <div class="r"><span>Deal value</span><span class="mono">${fmt(d.cur,d.amount)}</span></div>
+    <div class="r"><span>TC fee</span><span><input class="mono" type="number" value="${d.tcPct}" min="0" max="100" onchange="setFee('${id}','tcPct',this.value)">% = <span class="mono">${fmt(d.cur,tcAmt)}</span></span></div>
+    <div class="r"><span>Agent payout</span><span><input class="mono" type="number" value="${d.agPct}" min="0" max="20" onchange="setFee('${id}','agPct',this.value)">% = <span class="mono">${fmt(d.cur,agAmt)}</span></span></div>
+    <div class="r tot"><span>TC net</span><span class="mono">${fmt(d.cur,net)}</span></div>
+    <div class="basis"><span>Payout basis</span>
+      <select onchange="setFee('${id}','basis',this.value)">
+        <option value="initial_term"${d.basis==='initial_term'?' selected':''}>Initial term only (default)</option>
+        <option value="every_year"${d.basis==='every_year'?' selected':''}>Every contract year</option>
+      </select></div>
+  </div>`;}
+function setFee(id,k,v){DEALS[id][k]=(k==='basis')?v:Number(v);openDeal(id);}
+function openDeal(id){const d=DEALS[id];if(!d)return;
+  document.getElementById('d-stage').innerHTML=d.stage;
+  document.getElementById('d-co').textContent=d.co;
+  document.getElementById('d-meta').textContent=d.cat+" · "+d.meta;
+  document.getElementById('d-body').innerHTML=`
+    <div class="sec"><div class="st">Fee (editable per deal)</div>${renderFee(id)}</div>
+    <div class="sec"><div class="st">Suggested sponsorables (match: ${d.cat.split(' ')[0]})</div><div class="suggest">${d.suggest}</div></div>
+    <div class="sec"><div class="st">Selected activations</div><div>${d.activ.map(a=>`<span class="tag">${a}</span>`).join('')}</div></div>
+    <div class="sec"><div class="st">Contract / referral</div><div class="kv"><span class="k">Contract</span><span class="v">${d.contract}</span></div><div class="kv"><span class="k">Referral</span><span class="v">${d.ref}</span></div></div>
+    <div class="sec"><div class="st">Activity log</div><div class="timeline">${d.acts.map(a=>`<div class="ti"><span class="dt">${a[0]}</span><span>${a[1]}</span></div>`).join('')}</div></div>
+    <div class="acts">
+      <button class="btn sm ghost" onclick="toast('Create progress report')">Progress report</button>
+      <button class="btn sm ghost" onclick="toast('Create results report')">Results report</button>
+      <button class="btn sm" onclick="toast('Stage updated')">Change stage</button>
+    </div>`;
+  document.getElementById('drawer').classList.add('on');
+  document.getElementById('scrim').classList.add('on');}
+function closeDeal(){document.getElementById('drawer').classList.remove('on');document.getElementById('scrim').classList.remove('on');}
+
+/* ===== Nav / mode ===== */
+function nav(s){closeDeal();document.querySelectorAll('.screen').forEach(e=>e.classList.remove('on'));
+  document.getElementById(s).classList.add('on');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));}
+function setMode(m){const a=m==='admin';
+  document.getElementById('adminView').style.display=a?'flex':'none';
+  document.getElementById('siteView').classList.toggle('on',!a);
+  document.getElementById('m-admin').classList.toggle('on',a);
+  document.getElementById('m-site').classList.toggle('on',!a);
+  closeDeal();window.scrollTo(0,0);}
+function scrollTo2(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'center'});}
+
+/* ===== Public catalog (teaser: published only) ===== */
+function renderCatalog(){
+  const ft=document.getElementById('f-type').value, fc=document.getElementById('f-country').value;
+  const list=SPONSORABLES.filter(s=>s.status==='published'
+     &&(ft==='all'||s.type===ft)&&(fc==='all'||s.country===fc));
+  document.getElementById('catalog').innerHTML=list.map(s=>`
+    <div class="scard">
+      <div class="ty">${TYPE_LABEL[s.type]}</div>
+      <div class="nm">${s.name}</div>
+      <div class="lo"><span class="flag">${s.country}</span> ${COUNTRY[s.country]||s.country}</div>
+      <div class="ds">${s.summary}</div>
+      <div class="sb"><span class="tiers">${s.tiers}</span></div>
+      <button class="ask" onclick="toast('Inquiry sent to our team about ${s.name.replace(/'/g,"")}')">Sponsor this</button>
+    </div>`).join('')
+    ||'<div class="muted" style="padding:20px">No openings match these filters.</div>';}
+
+/* ===== init ===== */
+let to;function toast(m){const t=document.getElementById('toast');t.innerHTML='✓ &nbsp;'+m;t.classList.add('on');clearTimeout(to);to=setTimeout(()=>t.classList.remove('on'),2200);}
+refreshInvCounts();invTab('player');renderCatalog();
+</script>
+</body>
+</html>
