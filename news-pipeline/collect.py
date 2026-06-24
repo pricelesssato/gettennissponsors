@@ -137,10 +137,16 @@ def existing_links():
 
 
 # ---- Claude: relevance + clean rewrite --------------------------------
-PROMPT = """You are curating a tennis sponsorship news feed. Given a raw news item, decide if it is genuinely about a TENNIS sponsorship, partnership, or commercial deal (a player, club, tournament, tour, or federation gaining/announcing a sponsor or commercial partner).
+PROMPT = """You are the editor of a tennis sponsorship news feed whose readers include brands considering tennis sponsorship. Given a raw news item, decide if it is genuinely about a TENNIS sponsorship, partnership, or commercial deal (a player, club, tournament, tour, or federation gaining/announcing a sponsor or commercial partner).
+
+If relevant, write an editorial summary that DOUBLES AS POSITIVE EXPOSURE for the sponsor brand: name the brand, what it is sponsoring, and the visibility/value it gains (events, audience, activation, term). Stay factual and grounded in the item — do NOT invent figures; if unknown, keep it general. Frame why it matters for tennis sponsorship.
 
 Return ONLY compact JSON:
-{{"relevant": true|false, "headline": "<clean English headline, <=90 chars, factual, no clickbait>", "blurb": "<1-2 factual English sentences>", "country": "<ISO 3166-1 alpha-2 if clearly identifiable, else null>"}}
+{{"relevant": true|false,
+  "headline": "<clean English headline, <=90 chars, factual, no clickbait>",
+  "blurb": "<3-5 factual English sentences (roughly 60-110 words) summarising the deal and the sponsor's exposure/benefit>",
+  "author_name": "<the sponsor brand or governing body that is the subject, e.g. 'Mercedes-Benz' or 'ATP Tour'>",
+  "country": "<ISO 3166-1 alpha-2 if clearly identifiable, else null>"}}
 
 If it is not clearly a tennis sponsorship/partnership/commercial deal, return {{"relevant": false}} only.
 
@@ -176,7 +182,7 @@ def insert(item, cls):
     body = {
         "title": cls.get("headline") or item["title"][:120],
         "body": cls.get("blurb") or "",
-        "author_name": item["outlet"] or domain_of(item["url"]) or "Curated",
+        "author_name": cls.get("author_name") or item["outlet"] or domain_of(item["url"]) or "Curated",
         "author_type": "operator",
         "country": (cls.get("country") or None),
         "link_url": item["url"],
