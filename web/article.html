@@ -42,6 +42,8 @@ h1.title{font-size:30px;font-weight:900;line-height:1.2;letter-spacing:-.01em;ma
 .authorline .av{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;}
 .authorline .nm{font-weight:800;font-size:14px;}
 .authorline .ro{font-size:12px;color:var(--muted);}
+.sptag{font-family:"Roboto Mono";font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--green);background:#e6f0ea;border:1px solid #cfe3d6;border-radius:5px;padding:1px 6px;vertical-align:middle;}
+mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);color:inherit;font-weight:800;padding:0 1px;border-radius:2px;}
 .body{font-size:16px;line-height:1.85;color:#1f2c25;}
 .body p{margin-bottom:16px;}
 .srcbox{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px;}
@@ -75,7 +77,7 @@ h1.title{font-size:30px;font-weight:900;line-height:1.2;letter-spacing:-.01em;ma
 
 <script src="./shared/config.js"></script>
 <script type="module">
-import { supabase, requireConfig, countryName, newsThumb } from "./shared/supabase.js";
+import { supabase, requireConfig, countryName, newsThumb, markBrand } from "./shared/supabase.js";
 const TYPELABEL={player:"Player",club:"Club",tournament:"Tournament",operator:"GetTennisSponsors (editorial)",other:"Member"};
 let toTimer;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.className='toast on';clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2000);}
@@ -124,12 +126,12 @@ async function render(){
       ${n.country?`<span class="flag">${esc(n.country)}</span> ${esc(countryName(n.country))}`:''}
       <span>· ${fmtDate(n.published_at)}</span>
     </div>
-    <h1 class="title">${esc(n.title)}</h1>
+    <h1 class="title">${markBrand(n.title, isOp?n.author_name:'')}</h1>
     <div class="authorline">
       <div class="av">${esc(initial)}</div>
-      <div><div class="nm">${esc(n.author_name)}</div><div class="ro">${isOp?'Curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this win'}</div></div>
+      <div><div class="nm">${esc(n.author_name)} ${isOp?'<span class="sptag">Sponsor</span>':''}</div><div class="ro">${isOp?'Sponsor brand · curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this win'}</div></div>
     </div>
-    <div class="body">${(n.body||'').split(/\n+/).filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('')||'<p class="state">No details provided.</p>'}</div>
+    <div class="body">${(n.body||'').split(/\n+/).filter(Boolean).map(p=>`<p>${markBrand(p, isOp?n.author_name:'')}</p>`).join('')||'<p class="state">No details provided.</p>'}</div>
     ${n.link_url?`<div class="srcbox">Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">${esc(n.link_url)}</a></div>`:''}
     <div class="share">
       <button id="sh-x">Share on X</button>

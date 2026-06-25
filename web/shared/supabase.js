@@ -21,6 +21,30 @@ export const COUNTRY = {
 };
 export const countryName = (c) => COUNTRY[c] || c || "";
 
+const _esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// Split a sponsor name into highlightable terms: "Danone (Evian)" -> ["Danone","Evian"].
+export function brandTerms(name) {
+  if (!name) return [];
+  const out = [];
+  const m = String(name).match(/^(.*?)\s*[\(（](.*?)[\)）]\s*$/);
+  if (m) { out.push(m[1].trim()); out.push(m[2].trim()); }
+  else String(name).split(/\s*[\/／]\s*/).forEach(p => out.push(p.trim()));
+  return out.filter(t => t.length >= 2);
+}
+
+// Escape `text`, then wrap occurrences of the sponsor brand terms in <mark class="brand">.
+// Pass brand="" to just escape (e.g. for member posts where author isn't the sponsor).
+export function markBrand(text, brand) {
+  let out = _esc(text);
+  const terms = brandTerms(brand).sort((a, b) => b.length - a.length);
+  for (const t of terms) {
+    const et = _esc(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp("(" + et + ")(?![^<]*>)", "gi"), '<mark class="brand">$1</mark>');
+  }
+  return out;
+}
+
 // Generative SVG key-visual thumbnail — copyright-safe (our own art) but
 // tied to the SOURCE via its favicon + outlet name (attribution use, like an
 // RSS reader). Varied by 8 palettes x 5 patterns so no two look alike.
