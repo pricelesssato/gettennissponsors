@@ -33,10 +33,19 @@ QUERIES = {
                    "tennis equipment", "tennis gear", "tennis player closeup", "lawn tennis"],
 }
 # Reject other racket/ball sports & generic courts that Pexels returns for "tennis".
-BAD = ("table tennis", "ping pong", "ping-pong", "pingpong", "badminton", "shuttle",
-       "squash", "racquetball", "racketball", "pickleball", "padel", "paddle tennis",
-       "basketball", "volleyball", "football", "soccer", "baseball", "cricket",
-       "golf", "bowling", "billiard", "snooker", "hockey")
+BAD = (
+    # other racket / ball sports
+    "table tennis", "ping pong", "ping-pong", "pingpong", "badminton", "shuttle",
+    "squash", "racquetball", "racketball", "pickleball", "pickle", "padel", "paddle",
+    "basketball", "volleyball", "football", "soccer", "baseball", "cricket",
+    "golf", "bowling", "billiard", "snooker", "hockey",
+    # off-brand context (death / mourning)
+    "cemetery", "grave", "gravestone", "tombstone", "headstone", "funeral",
+    "memorial", "mourning", "death", "coffin",
+    # avoid senior / elderly for sponsor appeal
+    "senior", "elderly", "old man", "old woman", "old person",
+    "grandfather", "grandmother", "aged man", "aged woman", "retiree", "retired",
+)
 
 def die(m): print("ERROR:", m, file=sys.stderr); sys.exit(1)
 def h(s): return int(hashlib.md5(str(s).encode()).hexdigest(), 16)

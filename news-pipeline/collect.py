@@ -67,9 +67,13 @@ PEXELS_KEY = os.environ.get("PEXELS_API_KEY", "")  # optional: relevant photo th
 PEXELS_QUERIES = ["tennis player", "tennis match", "tennis serve", "tennis racket",
                   "professional tennis player", "wimbledon tennis", "tennis court", "lawn tennis"]
 PEXELS_BAD = ("table tennis", "ping pong", "ping-pong", "pingpong", "badminton", "shuttle",
-              "squash", "racquetball", "pickleball", "padel", "paddle tennis",
+              "squash", "racquetball", "pickleball", "pickle", "padel", "paddle",
               "basketball", "volleyball", "football", "soccer", "baseball", "cricket",
-              "golf", "bowling", "billiard", "snooker", "hockey")
+              "golf", "bowling", "billiard", "snooker", "hockey",
+              "cemetery", "grave", "gravestone", "tombstone", "headstone", "funeral",
+              "memorial", "mourning", "death", "coffin",
+              "senior", "elderly", "old man", "old woman", "old person",
+              "grandfather", "grandmother", "aged man", "aged woman", "retiree", "retired")
 def _tennis_ok(alt):
     a = (alt or "").lower()
     return ("tennis" in a) and not any(b in a for b in PEXELS_BAD)
