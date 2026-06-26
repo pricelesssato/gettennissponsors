@@ -96,17 +96,23 @@ function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fdt(d){try{return new Date(d).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});}catch(e){return '';}}
 
-async function init(){
-  if(!requireConfig())return;
-  const {data:{session}}=await supabase.auth.getSession();
-  SESSION=session;
-  if(!SESSION){renderGate();return;}
+let STARTED=false;
+async function proceed(){
+  if(STARTED)return; STARTED=true;
   document.getElementById('who').textContent=SESSION.user.email;
   const {data:prof}=await supabase.from('profiles').select('role').eq('id',SESSION.user.id).maybeSingle();
   IS_ADMIN = prof && (prof.role==='admin'||prof.role==='staff');
   if(!IS_ADMIN){ document.getElementById('app').innerHTML='<div class="gate"><h2>Not authorized</h2><p>This account is not an admin. <button class="btn ghost sm" id="so">Sign out</button></p></div>'; document.getElementById('so').onclick=signOut; return; }
   renderApp(); load();
-  supabase.auth.onAuthStateChange((_e,s)=>{ if(s!==SESSION){location.reload();} });
+}
+async function init(){
+  if(!requireConfig())return;
+  supabase.auth.onAuthStateChange((event,s)=>{
+    if((event==='SIGNED_IN'||event==='INITIAL_SESSION') && s && !STARTED){ SESSION=s; proceed(); }
+    else if(event==='SIGNED_OUT'){ STARTED=false; SESSION=null; document.getElementById('who').textContent=''; renderGate(); }
+  });
+  const {data:{session}}=await supabase.auth.getSession();
+  if(session){ SESSION=session; proceed(); } else { renderGate(); }
 }
 function renderGate(){
   document.getElementById('app').innerHTML=`<div class="gate">
@@ -119,7 +125,7 @@ function renderGate(){
     if(error){toast(error.message,true);return;} toast('Login link sent — check your email');
   };
 }
-async function signOut(){await supabase.auth.signOut();location.reload();}
+async function signOut(){await supabase.auth.signOut();}
 
 function renderApp(){
   document.getElementById('app').innerHTML=`
