@@ -102,6 +102,10 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 .stockhint{font-size:11.5px;color:var(--muted);margin-top:8px;}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:120;background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:12px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;}
 .toast.on{opacity:1;transform:translateX(-50%);}
+.foot{background:var(--green-3);color:#cfe0d6;padding:34px 22px;margin-top:30px;}
+.foot .inner{max-width:1180px;margin:0 auto;text-align:center;font-size:12px;}
+.foot .b{color:#fff;font-weight:900;font-size:16px;margin-bottom:6px;}
+.foot a{color:var(--accent);}
 .toast.err{background:var(--red);}
 @media(max-width:680px){.row2{grid-template-columns:1fr;}}
 </style>
@@ -136,6 +140,11 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
   </div>
   <div id="studio"></div>
 </div>
+<footer class="foot"><div class="inner">
+  <div class="b">GetTennisSponsors</div>
+  The tennis sponsorship press-release platform · operated by <a href="https://tenniscollective.app/" target="_blank" rel="noopener">Tennis Collective</a><br>
+  © 2026 GetTennisSponsors
+</div></footer>
 <div class="modal" id="stockmodal">
   <div class="modalbox">
     <div class="mh"><h3>Choose a photo</h3><button class="x" id="stock-x">×</button></div>

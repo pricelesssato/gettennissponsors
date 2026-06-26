@@ -82,6 +82,10 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 .state{color:var(--muted);font-size:14px;padding:40px 0;text-align:center;}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:120;background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:12px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;}
 .toast.on{opacity:1;transform:translateX(-50%);}
+.foot{background:var(--green-3);color:#cfe0d6;padding:34px 22px;margin-top:30px;}
+.foot .inner{max-width:1180px;margin:0 auto;text-align:center;font-size:12px;}
+.foot .b{color:#fff;font-weight:900;font-size:16px;margin-bottom:6px;}
+.foot a{color:var(--accent);}
 </style>
 </head>
 <body>
@@ -112,6 +116,11 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
   <article id="article"><div class="state">Loading…</div></article>
   <div class="more" id="more"></div>
 </div>
+<footer class="foot"><div class="inner">
+  <div class="b">GetTennisSponsors</div>
+  The tennis sponsorship press-release platform · operated by <a href="https://tenniscollective.app/" target="_blank" rel="noopener">Tennis Collective</a><br>
+  © 2026 GetTennisSponsors
+</div></footer>
 <div class="toast" id="toast"></div>
 
 <script src="./shared/config.js"></script>
