@@ -18,6 +18,7 @@ export const COUNTRY = {
   US: "United States", AU: "Australia", FR: "France", IT: "Italy",
   PL: "Poland", HK: "Hong Kong", ES: "Spain", DE: "Germany", CH: "Switzerland",
   CN: "China", IN: "India", AE: "United Arab Emirates", SA: "Saudi Arabia",
+  SE: "Sweden", KW: "Kuwait", RU: "Russia", RS: "Serbia",
 };
 export const countryName = (c) => COUNTRY[c] || c || "";
 

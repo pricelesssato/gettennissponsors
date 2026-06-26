@@ -45,8 +45,10 @@ update news_posts set author_type = 'other' where source = 'operator' and title 
 update news_posts set sponsor_name = null  where source = 'operator' and title = 'US Open confirms its 2026 partner roster';
 update news_posts set sponsor_name = 'Itaú' where source = 'operator' and title = 'Miami Open expands its global partnership portfolio for 2026';
 
--- public view: expose sponsor_name too
-create or replace view public_news as
+-- public view: expose sponsor_name too.
+-- DROP first — create-or-replace cannot reorder/rename existing view columns.
+drop view if exists public_news;
+create view public_news as
   select id, title, body, author_name, sponsor_name, author_type, country, link_url, image_url, source,
          coalesce(published_at, created_at) as published_at
   from news_posts
