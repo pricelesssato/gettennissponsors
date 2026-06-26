@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Admin — GetTennisSponsors</title>
+<link rel="icon" type="image/png" href="/assets/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#0F4D34;--green-2:#15573C;--green-3:#0A3A27;--accent:#C8DC2B;--ink:#16241D;--muted:#6E756F;
+  --line:#E4E8E3;--line-2:#D2D8D0;--bg:#F4F6F3;--surface:#FFFFFF;--red:#B23A48;--blue:#2563A8;
+  --radius:12px;--shadow:0 1px 2px rgba(20,40,30,.05),0 8px 24px rgba(20,40,30,.06);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+a{color:var(--blue);}
+.hdr{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:10px 20px;}
+.hdr img{height:46px;}
+.hdr .sys{font-family:"Roboto Mono";font-size:12px;color:var(--muted);font-weight:700;}
+.hdr .who{margin-left:auto;font-size:12.5px;color:var(--muted);}
+.wrap{max-width:1100px;margin:0 auto;padding:22px 20px 70px;}
+.h1{font-size:22px;font-weight:900;margin-bottom:14px;}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.tools input,.tools select{border:1px solid var(--line-2);border-radius:9px;padding:9px 12px;font-family:inherit;font-size:13.5px;background:#fff;}
+.tools input.q{flex:1;min-width:220px;}
+.btn{background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:9px 14px;border-radius:9px;}
+.btn.ghost{background:#fff;color:var(--green);border:1px solid var(--line-2);}
+.btn.red{background:var(--red);color:#fff;}
+.btn.sm{padding:6px 10px;font-size:12px;}
+.row{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:10px;margin-bottom:8px;}
+.row .th{width:96px;height:62px;border-radius:8px;object-fit:cover;flex:0 0 auto;background:var(--bg);border:1px solid var(--line-2);}
+.row .meta{flex:1;min-width:0;}
+.row .tt{font-weight:700;font-size:14px;line-height:1.35;}
+.row .mm{font-size:11.5px;color:var(--muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.badge{font-family:"Roboto Mono";font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:5px;}
+.b-published{color:var(--green);background:#e6f0ea;} .b-hidden{color:var(--red);background:#f7e9eb;}
+.b-draft{color:var(--muted);background:#eef0ed;} .b-scheduled{color:var(--blue);background:#e6eef7;}
+.b-operator{color:var(--blue);background:#e6eef7;} .b-self{color:var(--green);background:#e6f0ea;}
+.row .acts{display:flex;gap:6px;flex:0 0 auto;}
+.pager{display:flex;justify-content:center;gap:14px;align-items:center;margin-top:16px;}
+.pager .pinfo{font-family:"Roboto Mono";font-size:12px;color:var(--muted);}
+.note{color:var(--muted);font-size:13px;padding:30px;text-align:center;}
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(20,30,25,.4);z-index:80;opacity:0;pointer-events:none;transition:.2s;}
+.scrim.on{opacity:1;pointer-events:auto;}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,96vw);background:#fff;z-index:90;transform:translateX(102%);transition:.24s;overflow-y:auto;box-shadow:-8px 0 30px rgba(20,40,30,.16);}
+.drawer.on{transform:none;}
+.dh{position:sticky;top:0;background:#fff;padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+.dh h3{font-size:16px;font-weight:900;}
+.db{padding:18px 20px 50px;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line-2);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:13.5px;background:var(--bg);}
+.field textarea{min-height:120px;resize:vertical;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.imgbox{border:1px solid var(--line-2);border-radius:10px;padding:12px;background:var(--bg);}
+.imgbox img{width:100%;max-height:180px;object-fit:cover;border-radius:8px;display:none;}
+.imgbtns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 6px;}
+.filebtn{font-size:12.5px;font-weight:700;color:var(--green);border:1px solid var(--line-2);border-radius:9px;padding:8px 12px;cursor:pointer;background:#fff;}
+.stockgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:8px;max-height:240px;overflow:auto;}
+.stockgrid img{width:100%;height:74px;object-fit:cover;border-radius:7px;cursor:pointer;border:2px solid transparent;}
+.stockgrid img:hover{border-color:var(--green);}
+.pbtn{background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:12px;border-radius:10px;width:100%;}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:130;background:var(--ink);color:#fff;font-size:13px;padding:12px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;}
+.toast.on{opacity:1;transform:translateX(-50%);}
+.toast.err{background:var(--red);}
+.gate{max-width:440px;margin:60px auto;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:26px;}
+.gate h2{font-size:18px;font-weight:900;margin-bottom:6px;}
+.gate p{font-size:13px;color:var(--muted);margin-bottom:14px;}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <a href="./index.html"><img src="./assets/logo.png" alt="GetTennisSponsors"></a>
+  <span class="sys">ADMIN</span>
+  <span class="who" id="who"></span>
+</div>
+<div class="wrap" id="app"><div class="note">Loading…</div></div>
+
+<div class="scrim" id="scrim" onclick="closeDrawer()"></div>
+<aside class="drawer" id="drawer"><div class="dh"><h3 id="d-title">Edit post</h3><button class="btn ghost sm" onclick="closeDrawer()">Close</button></div><div class="db" id="d-body"></div></aside>
+<div class="toast" id="toast"></div>
+
+<script src="./shared/config.js"></script>
+<script type="module">
+import { supabase, requireConfig, countryName } from "./shared/supabase.js";
+const PEXELS=(window.GTS_CONFIG||{}).PEXELS_API_KEY||'';
+const TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'local';
+const PER=25;
+let SESSION=null, IS_ADMIN=false, PAGE=0, Q='', STATUS='all', EDIT=null, IMG=null;
+let toTimer;
+function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast on'+(err?' err':'');clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2600);}
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function fdt(d){try{return new Date(d).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});}catch(e){return '';}}
+
+async function init(){
+  if(!requireConfig())return;
+  const {data:{session}}=await supabase.auth.getSession();
+  SESSION=session;
+  if(!SESSION){renderGate();return;}
+  document.getElementById('who').textContent=SESSION.user.email;
+  const {data:prof}=await supabase.from('profiles').select('role').eq('id',SESSION.user.id).maybeSingle();
+  IS_ADMIN = prof && (prof.role==='admin'||prof.role==='staff');
+  if(!IS_ADMIN){ document.getElementById('app').innerHTML='<div class="gate"><h2>Not authorized</h2><p>This account is not an admin. <button class="btn ghost sm" id="so">Sign out</button></p></div>'; document.getElementById('so').onclick=signOut; return; }
+  renderApp(); load();
+  supabase.auth.onAuthStateChange((_e,s)=>{ if(s!==SESSION){location.reload();} });
+}
+function renderGate(){
+  document.getElementById('app').innerHTML=`<div class="gate">
+    <h2>Admin sign in</h2><p>Sign in with your admin email (one-time link, no password).</p>
+    <div class="field"><label>Email</label><input id="g-email" type="email" placeholder="yasuhito.sato@gmail.com"></div>
+    <button class="pbtn" id="g-btn">Send login link</button></div>`;
+  document.getElementById('g-btn').onclick=async()=>{
+    const email=document.getElementById('g-email').value.trim(); if(!email){toast('Enter email',true);return;}
+    const {error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:location.href}});
+    if(error){toast(error.message,true);return;} toast('Login link sent — check your email');
+  };
+}
+async function signOut(){await supabase.auth.signOut();location.reload();}
+
+function renderApp(){
+  document.getElementById('app').innerHTML=`
+    <div class="h1">Article manager</div>
+    <div class="tools">
+      <input class="q" id="t-q" placeholder="Search title / author / sponsor…">
+      <select id="t-status">
+        <option value="all">All statuses</option>
+        <option value="published">Published</option>
+        <option value="hidden">Hidden</option>
+        <option value="draft">Draft</option>
+        <option value="scheduled">Scheduled</option>
+      </select>
+      <button class="btn" id="t-go">Search</button>
+      <button class="btn ghost" id="t-out">Sign out</button>
+    </div>
+    <div id="list"><div class="note">Loading…</div></div>
+    <div class="pager" id="pager"></div>`;
+  document.getElementById('t-go').onclick=()=>{Q=document.getElementById('t-q').value.trim();STATUS=document.getElementById('t-status').value;PAGE=0;load();};
+  document.getElementById('t-q').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('t-go').click();});
+  document.getElementById('t-out').onclick=signOut;
+}
+
+async function load(){
+  const list=document.getElementById('list'); list.innerHTML='<div class="note">Loading…</div>';
+  let qy=supabase.from('news_posts').select('*',{count:'exact'}).order('published_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false});
+  if(STATUS!=='all') qy=qy.eq('status',STATUS);
+  if(Q){const w=Q.replace(/[,()*]/g,' ');qy=qy.or(`title.ilike.*${w}*,author_name.ilike.*${w}*,sponsor_name.ilike.*${w}*`);}
+  qy=qy.range(PAGE*PER, PAGE*PER+PER-1);
+  const {data,error,count}=await qy;
+  if(error){list.innerHTML='<div class="note">Error: '+error.message+'</div>';return;}
+  if(!data.length){list.innerHTML='<div class="note">No posts found.</div>';renderPager(0);return;}
+  list.innerHTML=data.map(n=>`
+    <div class="row">
+      <img class="th" src="${esc(n.image_url||'./assets/icon.png')}" alt="">
+      <div class="meta">
+        <div class="tt">${esc(n.title)}</div>
+        <div class="mm">
+          <span class="badge b-${n.status}">${esc(n.status)}</span>
+          <span class="badge b-${n.source}">${esc(n.source)}</span>
+          <span>${esc(n.author_name||'')}</span>${n.sponsor_name?`· <b>${esc(n.sponsor_name)}</b>`:''}
+          ${n.country?`· ${esc(n.country)}`:''} · ${fdt(n.published_at||n.created_at)}
+        </div>
+      </div>
+      <div class="acts">
+        <button class="btn ghost sm" data-edit="${n.id}">Edit</button>
+        ${n.status==='published'?`<button class="btn ghost sm" data-hide="${n.id}">Hide</button>`:`<button class="btn sm" data-pub="${n.id}">Publish</button>`}
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openDrawer(data.find(x=>x.id===b.dataset.edit)));
+  list.querySelectorAll('[data-hide]').forEach(b=>b.onclick=()=>quickStatus(b.dataset.hide,'hidden'));
+  list.querySelectorAll('[data-pub]').forEach(b=>b.onclick=()=>quickStatus(b.dataset.pub,'published'));
+  renderPager(count||0);
+}
+function renderPager(count){
+  const pages=Math.max(1,Math.ceil(count/PER));
+  document.getElementById('pager').innerHTML=`<button class="btn ghost sm" id="pp" ${PAGE===0?'disabled':''}>← Prev</button>
+    <span class="pinfo">Page ${PAGE+1} / ${pages} · ${count} posts</span>
+    <button class="btn ghost sm" id="pn" ${PAGE>=pages-1?'disabled':''}>Next →</button>`;
+  const pp=document.getElementById('pp'),pn=document.getElementById('pn');
+  if(pp)pp.onclick=()=>{if(PAGE>0){PAGE--;load();}};
+  if(pn)pn.onclick=()=>{if(PAGE<pages-1){PAGE++;load();}};
+}
+async function quickStatus(id,status){
+  const patch={status}; if(status==='published') patch.published_at=new Date().toISOString();
+  const {error}=await supabase.from('news_posts').update(patch).eq('id',id);
+  if(error){toast(error.message,true);return;} toast(status==='published'?'Published':'Hidden'); load();
+}
+
+/* ---- editor drawer ---- */
+function openDrawer(n){
+  EDIT=n; IMG=n.image_url||null;
+  document.getElementById('d-title').textContent='Edit post';
+  const sched=(n.status==='scheduled'&&n.published_at)?(()=>{const d=new Date(n.published_at);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);})():'';
+  document.getElementById('d-body').innerHTML=`
+    <div class="field"><label>Photo</label>
+      <div class="imgbox">
+        <img id="e-imgprev" src="${esc(IMG||'')}" style="${IMG?'display:block':''}">
+        <div class="imgbtns">
+          <label class="filebtn">Upload<input type="file" id="e-imgfile" accept="image/*" hidden></label>
+          <button type="button" class="filebtn" id="e-stockbtn">Search stock</button>
+          <button type="button" class="filebtn" id="e-clearimg">Remove</button>
+        </div>
+        <div class="field" style="margin:4px 0 0"><input id="e-imgurl" placeholder="…or paste an image URL" value="${esc(IMG||'')}"></div>
+        <div class="stockgrid" id="e-stock"></div>
+      </div></div>
+    <div class="field"><label>Headline</label><input id="e-title" value="${esc(n.title||'')}"></div>
+    <div class="row2">
+      <div class="field"><label>Author (shown)</label><input id="e-author" value="${esc(n.author_name||'')}"></div>
+      <div class="field"><label>Sponsor (highlighted)</label><input id="e-sponsor" value="${esc(n.sponsor_name||'')}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Category</label><select id="e-type">
+        <option value="tournament">tournament</option><option value="club">club</option><option value="player">player</option><option value="other">other</option></select></div>
+      <div class="field"><label>Country (ISO)</label><input id="e-country" maxlength="2" value="${esc(n.country||'')}"></div>
+    </div>
+    <div class="field"><label>Source link</label><input id="e-link" value="${esc(n.link_url||'')}"></div>
+    <div class="field"><label>Body</label><textarea id="e-body">${esc(n.body||'')}</textarea></div>
+    <div class="row2">
+      <div class="field"><label>Status</label><select id="e-status">
+        <option value="published">published</option><option value="hidden">hidden</option>
+        <option value="draft">draft</option><option value="scheduled">scheduled</option></select></div>
+      <div class="field"><label>Publish at (${esc(TZ)})</label><input id="e-when" type="datetime-local" value="${sched}"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="pbtn" id="e-save">Save changes</button>
+      <button class="btn red" id="e-del" style="flex:0 0 auto;padding:12px 16px">Delete</button>
+    </div>`;
+  document.getElementById('e-type').value=n.author_type||'other';
+  document.getElementById('e-status').value=n.status||'published';
+  document.getElementById('e-imgfile').onchange=onUpload;
+  document.getElementById('e-stockbtn').onclick=()=>searchStock('tennis');
+  document.getElementById('e-clearimg').onclick=()=>{IMG=null;const p=document.getElementById('e-imgprev');p.style.display='none';document.getElementById('e-imgurl').value='';};
+  document.getElementById('e-imgurl').addEventListener('input',e=>{IMG=e.target.value.trim()||null;const p=document.getElementById('e-imgprev');if(IMG){p.src=IMG;p.style.display='block';}else p.style.display='none';});
+  document.getElementById('e-save').onclick=saveEdit;
+  document.getElementById('e-del').onclick=delEdit;
+  document.getElementById('drawer').classList.add('on');document.getElementById('scrim').classList.add('on');
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('on');document.getElementById('scrim').classList.remove('on');EDIT=null;}
+function setImg(url){IMG=url;const p=document.getElementById('e-imgprev');p.src=url;p.style.display='block';document.getElementById('e-imgurl').value=url;}
+async function onUpload(e){
+  const f=e.target.files[0]; if(!f)return;
+  const path=`${SESSION.user.id}/${Date.now()}_${f.name.replace(/[^A-Za-z0-9._-]/g,'_')}`;
+  toast('Uploading…');
+  const {error}=await supabase.storage.from('news-images').upload(path,f,{contentType:f.type});
+  if(error){toast('Upload failed: '+error.message,true);return;}
+  const {data}=supabase.storage.from('news-images').getPublicUrl(path); setImg(data.publicUrl); toast('Uploaded');
+}
+async function searchStock(q){
+  if(!PEXELS){toast('Add PEXELS_API_KEY to config.js for stock search',true);return;}
+  const grid=document.getElementById('e-stock'); grid.innerHTML='<div class="note" style="padding:10px">Searching…</div>';
+  try{
+    const r=await fetch('https://api.pexels.com/v1/search?query='+encodeURIComponent(q||'tennis')+'&per_page=24&orientation=landscape',{headers:{Authorization:PEXELS}});
+    const d=await r.json(); const ph=(d.photos||[]).filter(p=>{const a=(p.alt||'').toLowerCase();return a.includes('tennis')&&!/table tennis|ping pong|badminton|padel|paddle|pickle|squash|basketball|volleyball|senior|elderly|grave|cemetery/.test(a);});
+    grid.innerHTML=ph.map(p=>`<img src="${esc(p.src.medium)}" data-full="${esc(p.src.landscape||p.src.large)}">`).join('')||'<div class="note" style="padding:10px">No tennis photos.</div>';
+    grid.querySelectorAll('img').forEach(im=>im.onclick=()=>{setImg(im.dataset.full);toast('Photo selected');});
+  }catch(e){grid.innerHTML='<div class="note" style="padding:10px">Error</div>';}
+}
+async function saveEdit(){
+  const patch={
+    title:document.getElementById('e-title').value.trim(),
+    author_name:document.getElementById('e-author').value.trim()||null,
+    sponsor_name:document.getElementById('e-sponsor').value.trim()||null,
+    author_type:document.getElementById('e-type').value,
+    country:document.getElementById('e-country').value.trim().toUpperCase()||null,
+    link_url:document.getElementById('e-link').value.trim()||null,
+    body:document.getElementById('e-body').value,
+    image_url:IMG,
+    status:document.getElementById('e-status').value,
+  };
+  if(patch.status==='scheduled'){const v=document.getElementById('e-when').value; if(v) patch.published_at=new Date(v).toISOString();}
+  if(patch.status==='published' && (EDIT.status!=='published')) patch.published_at=new Date().toISOString();
+  const btn=document.getElementById('e-save');btn.disabled=true;btn.textContent='Saving…';
+  const {error}=await supabase.from('news_posts').update(patch).eq('id',EDIT.id);
+  btn.disabled=false;btn.textContent='Save changes';
+  if(error){toast(error.message,true);return;}
+  toast('Saved'); closeDrawer(); load();
+}
+async function delEdit(){
+  if(!confirm('Delete this post permanently?'))return;
+  const {error}=await supabase.from('news_posts').delete().eq('id',EDIT.id);
+  if(error){toast(error.message,true);return;}
+  toast('Deleted'); closeDrawer(); load();
+}
+window.closeDrawer=closeDrawer;
+init();
+</script>
+</body>
+</html>

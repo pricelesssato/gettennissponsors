@@ -1,5 +1,6 @@
 # Clean article URL: /article?n=<code> (and /article?id=<uuid>) -> article.html
 RewriteEngine On
 RewriteRule ^article/?$ article.html [QSA,L]
+RewriteRule ^admin/?$ admin.html [QSA,L]
 # Short alias: /s/<code> redirects to the clean article URL
 RewriteRule ^s/([A-Za-z0-9]+)/?$ /article?n=$1 [R=301,L]
