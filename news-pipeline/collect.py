@@ -203,10 +203,10 @@ def classify(client, item):
 def photo_for(item):
     if not PEXELS_KEY:
         return None
-    q = PEXELS_QUERIES[hash(item["url"]) % len(PEXELS_QUERIES)]
+    q = PEXELS_QUERIES[abs(hash(item["url"])) % len(PEXELS_QUERIES)]
     try:
         r = requests.get("https://api.pexels.com/v1/search",
-                         params={"query": q, "per_page": 15, "orientation": "landscape"},
+                         params={"query": q, "per_page": 80, "orientation": "landscape"},
                          headers={"Authorization": PEXELS_KEY}, timeout=30)
         photos = r.json().get("photos", []) if r.status_code == 200 else []
         if not photos:
