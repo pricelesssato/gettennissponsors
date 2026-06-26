@@ -82,6 +82,18 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 .imgprev{width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid var(--line-2);margin-top:8px;display:none;}
 .hint{font-size:11.5px;color:var(--muted);margin-top:5px;}
 .filebtn{display:inline-block;font-size:12.5px;font-weight:700;color:var(--green);border:1px solid var(--line-2);border-radius:9px;padding:8px 13px;cursor:pointer;background:var(--surface);}
+.modal{position:fixed;inset:0;background:rgba(20,30,25,.5);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:30px 16px;overflow:auto;}
+.modal.on{display:flex;}
+.modalbox{background:#fff;border-radius:14px;max-width:780px;width:100%;padding:18px 18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.3);}
+.modalbox .mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.modalbox .mh h3{font-size:16px;font-weight:900;}
+.modalbox .x{font-size:22px;color:var(--muted);width:32px;height:32px;border-radius:8px;}
+.stocksearch{display:flex;gap:8px;margin-bottom:12px;}
+.stocksearch input{flex:1;border:1px solid var(--line-2);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:13.5px;background:var(--bg);}
+.stockgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+.stockgrid img{width:100%;height:104px;object-fit:cover;border-radius:9px;cursor:pointer;border:2px solid transparent;}
+.stockgrid img:hover{border-color:var(--green);}
+.stockhint{font-size:11.5px;color:var(--muted);margin-top:8px;}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:120;background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:12px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;}
 .toast.on{opacity:1;transform:translateX(-50%);}
 .toast.err{background:var(--red);}
@@ -120,6 +132,14 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 
   <div id="studio"></div>
 </div>
+<div class="modal" id="stockmodal">
+  <div class="modalbox">
+    <div class="mh"><h3>Choose a photo</h3><button class="x" id="stock-x">×</button></div>
+    <div class="stocksearch"><input id="stock-q" placeholder="Search photos — e.g. tennis, clay court, trophy, stadium"><button class="pbtn" id="stock-go">Search</button></div>
+    <div class="stockgrid" id="stock-grid"></div>
+    <div class="stockhint">Photos by Pexels — free for commercial use, no attribution required.</div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script src="./shared/config.js"></script>
@@ -127,6 +147,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 import { supabase, requireConfig, countryName, markBrand } from "./shared/supabase.js";
 window.gtsSearch=(e)=>{e.preventDefault();const v=e.target.querySelector('input').value.trim();location.href='./index.html'+(v?('?q='+encodeURIComponent(v)):'');return false;};
 const TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'local';
+const PEXELS=(window.GTS_CONFIG||{}).PEXELS_API_KEY||'';
 let toTimer;
 function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast on'+(err?' err':'');clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2800);}
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -218,6 +239,7 @@ function renderStudio(){
     <div class="field"><label>Source link (optional)</label><input id="n-link" placeholder="https://…"></div>
     <div class="field"><label>Image (optional)</label><br>
       <label class="filebtn">Upload image<input type="file" id="n-imgfile" accept="image/*" hidden></label>
+      <button type="button" class="filebtn" id="n-stockbtn" style="margin-left:6px">Choose from stock</button>
       <img class="imgprev" id="n-imgprev" alt=""></div>
     <div class="field"><label>Story</label><textarea id="n-body" placeholder="What happened…"></textarea></div>
     <div class="row2">
@@ -246,6 +268,7 @@ function renderStudio(){
   document.getElementById('pf-avfile').onchange=onAvatar;
   document.getElementById('pf-save').onclick=saveProfile;
   document.getElementById('n-imgfile').onchange=onImage;
+  const sb=document.getElementById('n-stockbtn'); if(sb) sb.onclick=openStock;
   document.getElementById('n-btn').onclick=savePost;
   document.getElementById('n-cancel').onclick=()=>{EDIT_ID=null;clearForm();};
   loadMine();
@@ -293,6 +316,26 @@ async function onImage(e){
   NEWS_IMG=data.publicUrl;
   const prev=document.getElementById('n-imgprev'); prev.src=NEWS_IMG; prev.style.display='block';
   toast('Image attached');
+}
+
+/* ---- stock photo picker (Pexels) ---- */
+function openStock(){
+  if(!PEXELS){toast('Stock picker needs a Pexels key in config.js (optional)',true);return;}
+  document.getElementById('stockmodal').classList.add('on');
+  if(!document.getElementById('stock-grid').children.length) searchStock('tennis');
+}
+function closeStock(){document.getElementById('stockmodal').classList.remove('on');}
+async function searchStock(q){
+  const grid=document.getElementById('stock-grid'); grid.innerHTML='<div class="who" style="padding:10px">Searching…</div>';
+  try{
+    const r=await fetch('https://api.pexels.com/v1/search?query='+encodeURIComponent(q||'tennis')+'&per_page=30&orientation=landscape',{headers:{Authorization:PEXELS}});
+    const d=await r.json(); const photos=d.photos||[];
+    if(!photos.length){grid.innerHTML='<div class="who" style="padding:10px">No photos found.</div>';return;}
+    grid.innerHTML=photos.map(p=>`<img src="${esc(p.src.medium)}" data-full="${esc(p.src.landscape||p.src.large)}" alt="">`).join('');
+    grid.querySelectorAll('img').forEach(im=>im.onclick=()=>{NEWS_IMG=im.dataset.full;
+      const pv=document.getElementById('n-imgprev'); pv.src=NEWS_IMG; pv.style.display='block';
+      closeStock(); toast('Photo selected');});
+  }catch(e){grid.innerHTML='<div class="who" style="padding:10px">Error: '+e.message+'</div>';}
 }
 
 /* ---- profile save ---- */
@@ -409,6 +452,10 @@ async function del(id){
   toast('Deleted'); await loadMine();
 }
 
+document.getElementById('stock-x').onclick=closeStock;
+document.getElementById('stock-go').onclick=()=>searchStock(document.getElementById('stock-q').value.trim());
+document.getElementById('stock-q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchStock(document.getElementById('stock-q').value.trim());}});
+document.getElementById('stockmodal').addEventListener('click',e=>{if(e.target.id==='stockmodal')closeStock();});
 init();
 </script>
 </body>
