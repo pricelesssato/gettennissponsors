@@ -1,0 +1,3 @@
+# Pretty short permalinks: /s/<code> -> /article.html?n=<code>
+RewriteEngine On
+RewriteRule ^s/([A-Za-z0-9]+)/?$ article.html?n=$1 [L,QSA]
