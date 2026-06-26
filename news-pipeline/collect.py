@@ -64,8 +64,15 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SERVICE_ROLE = os.environ.get("SUPABASE_SERVICE_ROLE", "")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 PEXELS_KEY = os.environ.get("PEXELS_API_KEY", "")  # optional: relevant photo thumbnails
-PEXELS_QUERIES = ["tennis player serve", "tennis stadium crowd", "tennis court lines",
-                  "professional tennis action", "tennis racket and ball", "tennis arena night"]
+PEXELS_QUERIES = ["tennis player", "tennis match", "tennis serve", "tennis racket",
+                  "professional tennis player", "wimbledon tennis", "tennis court", "lawn tennis"]
+PEXELS_BAD = ("table tennis", "ping pong", "ping-pong", "pingpong", "badminton", "shuttle",
+              "squash", "racquetball", "pickleball", "padel", "paddle tennis",
+              "basketball", "volleyball", "football", "soccer", "baseball", "cricket",
+              "golf", "bowling", "billiard", "snooker", "hockey")
+def _tennis_ok(alt):
+    a = (alt or "").lower()
+    return ("tennis" in a) and not any(b in a for b in PEXELS_BAD)
 
 
 def die(msg):
@@ -209,6 +216,7 @@ def photo_for(item):
                          params={"query": q, "per_page": 80, "orientation": "landscape"},
                          headers={"Authorization": PEXELS_KEY}, timeout=30)
         photos = r.json().get("photos", []) if r.status_code == 200 else []
+        photos = [p for p in photos if _tennis_ok(p.get("alt"))]   # tennis only
         if not photos:
             return None
         p = photos[abs(hash(item["title"])) % len(photos)]

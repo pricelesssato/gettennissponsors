@@ -23,18 +23,27 @@ PEXELS_KEY = os.environ.get("PEXELS_API_KEY", "")
 OVERWRITE = os.environ.get("OVERWRITE") == "1"
 
 QUERIES = {
-    "tournament": ["tennis tournament", "tennis stadium crowd", "tennis arena", "tennis court aerial",
-                   "tennis umpire", "grand slam tennis", "tennis match night", "tennis spectators"],
-    "player":     ["tennis player serve", "tennis forehand", "professional tennis match", "tennis backhand",
-                   "tennis player celebration", "woman tennis player", "tennis player action", "tennis volley"],
-    "club":       ["tennis club", "tennis court", "clay tennis court", "tennis net",
-                   "tennis academy", "grass tennis court", "indoor tennis court", "tennis lesson"],
-    "other":      ["tennis racket and ball", "tennis court lines", "tennis equipment", "tennis ball close up",
-                   "tennis racquet", "tennis sponsorship", "tennis branding", "tennis fans"],
+    "tournament": ["tennis tournament", "tennis match", "wimbledon tennis", "tennis stadium",
+                   "grand slam tennis", "professional tennis match", "tennis championship", "tennis crowd"],
+    "player":     ["tennis player", "tennis serve", "tennis forehand", "woman tennis player",
+                   "professional tennis player", "tennis player action", "tennis backhand", "tennis athlete"],
+    "club":       ["tennis club", "tennis court", "clay tennis court", "grass tennis court",
+                   "tennis academy", "tennis practice", "tennis lesson", "tennis player on court"],
+    "other":      ["tennis racket", "tennis ball", "tennis racquet", "tennis net",
+                   "tennis equipment", "tennis gear", "tennis player closeup", "lawn tennis"],
 }
+# Reject other racket/ball sports & generic courts that Pexels returns for "tennis".
+BAD = ("table tennis", "ping pong", "ping-pong", "pingpong", "badminton", "shuttle",
+       "squash", "racquetball", "racketball", "pickleball", "padel", "paddle tennis",
+       "basketball", "volleyball", "football", "soccer", "baseball", "cricket",
+       "golf", "bowling", "billiard", "snooker", "hockey")
 
 def die(m): print("ERROR:", m, file=sys.stderr); sys.exit(1)
 def h(s): return int(hashlib.md5(str(s).encode()).hexdigest(), 16)
+
+def tennis_ok(alt):
+    a = (alt or "").lower()
+    return ("tennis" in a) and not any(b in a for b in BAD)
 
 def search(q, seen):
     out = []
@@ -44,6 +53,8 @@ def search(q, seen):
     if r.status_code != 200:
         print(f"  pexels HTTP {r.status_code} for '{q}': {r.text[:100]}"); return out
     for p in r.json().get("photos", []):
+        if not tennis_ok(p.get("alt")):       # keep only genuine tennis photos
+            continue
         u = p.get("src", {}).get("landscape") or p.get("src", {}).get("large")
         if u and u not in seen:
             seen.add(u); out.append(u)
