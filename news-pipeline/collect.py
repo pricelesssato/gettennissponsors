@@ -30,6 +30,11 @@ QUERIES = [
     "tennis partnership announced",
     "ITF sponsor", "ATP sponsor", "WTA sponsor",
     "tennis tournament sponsor",
+    # club / academy / team-league (keep the Clubs category growing)
+    "tennis academy partnership",
+    "tennis academy sponsor",
+    "tennis club sponsor",
+    "team tennis league sponsor",
 ]
 
 # Only items whose article domain ends with one of these are eligible.
