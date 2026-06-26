@@ -138,7 +138,7 @@ async function render(){
   qy = slug ? qy.eq('slug',slug) : qy.eq('id',id);
   const {data:n,error}=await qy.maybeSingle();
   if(error||!n){art.innerHTML='<div class="state">This article isn\'t available. <a href="./news.html">Browse all news →</a></div>';return;}
-  const shareUrl = n.slug ? (location.origin+'/s/'+n.slug) : location.href;
+  const shareUrl = n.slug ? (location.origin+'/article?n='+n.slug) : location.href;
   setMeta(n,shareUrl);
   const isOp=n.source==='operator';
   const initial=(n.author_name||'?').trim().charAt(0).toUpperCase();
@@ -174,7 +174,7 @@ async function loadMore(excludeId){
   const list=(data||[]).filter(x=>x.id!==excludeId).slice(0,4);
   if(!list.length)return;
   document.getElementById('more').innerHTML='<h3>More news</h3>'+list.map(n=>`
-    <a class="morecard" href="${n.slug?('./article.html?n='+n.slug):('./article.html?id='+n.id)}">
+    <a class="morecard" href="${n.slug?('./article?n='+n.slug):('./article?id='+n.id)}">
       <div class="mm"><span class="badge ${n.source==='operator'?'operator':'self'}">${n.source==='operator'?'Curated':'News'}</span> &nbsp;${esc(n.author_name)}</div>
       <div class="mt">${esc(n.title)}</div>
     </a>`).join('');

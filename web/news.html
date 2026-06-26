@@ -16,11 +16,19 @@ body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink)
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
 a{color:var(--blue);}
 .flag{font-family:"Roboto Mono";font-size:10px;font-weight:700;color:#2c3a31;background:var(--bg);border:1px solid var(--line-2);border-radius:6px;padding:1px 6px;}
-.topnav{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:12px 22px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
-.brand{display:flex;align-items:center;gap:9px;font-weight:900;font-size:15px;}
-.brand a{color:inherit;text-decoration:none;display:flex;}
-.brand img{height:100px;width:auto;display:block;}
-.topnav .links a{font-size:13px;font-weight:700;color:#2c3a31;margin-left:18px;text-decoration:none;}
+.hdr{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+.hdr .top{display:flex;align-items:center;gap:24px;padding:14px 24px;max-width:1180px;margin:0 auto;}
+.logo{display:flex;align-items:center;flex:0 0 auto;}
+.logo img{height:100px;width:auto;display:block;}
+.search{flex:1 1 auto;max-width:400px;position:relative;}
+.search input{width:100%;border:1px solid var(--line-2);border-radius:999px;padding:9px 14px 9px 36px;font-family:inherit;font-size:13.5px;background:var(--bg);}
+.search::before{content:"⌕";position:absolute;left:13px;top:7px;font-size:16px;color:var(--muted);}
+.act{display:flex;align-items:center;gap:14px;margin-left:auto;flex:0 0 auto;}
+.act a{font-size:13px;font-weight:700;color:#2c3a31;text-decoration:none;}
+.act a:hover{color:var(--green);}
+.act .login{border:1px solid var(--line-2);padding:8px 13px;border-radius:9px;color:var(--green);}
+.act .post{background:var(--green);color:#fff;padding:9px 15px;border-radius:9px;}
+@media(max-width:780px){.act a:not(.post){display:none;}.search{max-width:none;}.logo img{height:64px;}}
 .wrap{max-width:1000px;margin:0 auto;padding:30px 22px 70px;}
 .head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:6px;}
 .h1{font-size:24px;font-weight:900;}
@@ -59,10 +67,16 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 </style>
 </head>
 <body>
-<div class="topnav">
-  <div class="brand"><a href="./index.html"><img src="./assets/logo.png" alt="GetTennisSponsors"></a></div>
-  <div class="links"><a href="./index.html#openings">Openings</a><a href="./news.html">News</a></div>
-</div>
+<header class="hdr"><div class="top">
+  <a class="logo" href="./index.html"><img src="./assets/logo.png" alt="GetTennisSponsors"></a>
+  <form class="search" onsubmit="return gtsSearch(event)"><input type="search" placeholder="Search sponsorship news, players, brands…"></form>
+  <div class="act">
+    <a href="./index.html#organisers">For organisers</a>
+    <a href="./index.html#apply">Get sponsors</a>
+    <a class="login" href="./news.html">Log in / Sign up</a>
+    <a class="post" href="./news.html">＋ Post your news</a>
+  </div>
+</div></header>
 
 <div class="wrap">
   <div class="head">
@@ -82,6 +96,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 <script src="./shared/config.js"></script>
 <script type="module">
 import { supabase, requireConfig, countryName, markBrand } from "./shared/supabase.js";
+window.gtsSearch=(e)=>{e.preventDefault();const v=e.target.querySelector('input').value.trim();location.href='./index.html'+(v?('?q='+encodeURIComponent(v)):'');return false;};
 const ATYPE={player:"Player",club:"Club",tournament:"Tournament",operator:"Operator",other:""};
 let toTimer;
 function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast on'+(err?' err':'');clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2800);}
@@ -230,9 +245,9 @@ async function loadFeed(){
         ${n.country?`<span class="flag">${esc(n.country)}</span>`:''}
         <span>${fmtDate(n.published_at)}</span>
       </div>
-      <h3><a href="${n.slug?('./article.html?n='+n.slug):('./article.html?id='+n.id)}" style="color:inherit">${markBrand(n.title, n.sponsor_name||'')}</a></h3>
+      <h3><a href="${n.slug?('./article?n='+n.slug):('./article?id='+n.id)}" style="color:inherit">${markBrand(n.title, n.sponsor_name||'')}</a></h3>
       ${n.body?`<p>${markBrand(n.body, n.sponsor_name||'')}</p>`:''}
-      <div class="src" style="font-size:12px;margin-top:8px"><a href="${n.slug?('./article.html?n='+n.slug):('./article.html?id='+n.id)}" style="font-weight:700">Read →</a>${n.link_url?` · Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">link</a>`:''}</div>
+      <div class="src" style="font-size:12px;margin-top:8px"><a href="${n.slug?('./article?n='+n.slug):('./article?id='+n.id)}" style="font-weight:700">Read →</a>${n.link_url?` · Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">link</a>`:''}</div>
     </div>`).join('');
 }
 init();

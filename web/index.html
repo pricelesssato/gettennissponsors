@@ -312,7 +312,7 @@ function render(){
     const isOp=n.source==='operator';
     const brand=n.sponsor_name||'';
     const thumb=n.image_url?`<img src="${esc(n.image_url)}" alt="">`:newsThumb(n);
-    return `<a class="rel" href="${n.slug?('./article.html?n='+n.slug):('./article.html?id='+n.id)}">
+    return `<a class="rel" href="${n.slug?('./article?n='+n.slug):('./article?id='+n.id)}">
       <div class="thumb">${thumb}</div>
       <div class="body">
         <div class="toprow"><span class="badge ${isOp?'operator':'self'}">${isOp?'⭐ Curated':'🎾 News'}</span><span class="cat">${TYPE_LABEL[cat(n)]||''}</span></div>
@@ -333,7 +333,7 @@ function renderPager(total,pages){
 function renderRank(){
   const list=ALL.slice(0,6);
   document.getElementById('rank').innerHTML=list.map((n,i)=>`
-    <a href="${n.slug?('./article.html?n='+n.slug):('./article.html?id='+n.id)}"><span class="no">${i+1}</span>
+    <a href="${n.slug?('./article?n='+n.slug):('./article?id='+n.id)}"><span class="no">${i+1}</span>
       <span><span class="rt">${esc(n.title)}</span><span class="rm">${esc(n.author_name)} · ${relTime(n.published_at)}</span></span></a>`).join('')
     ||'<div class="empty" style="padding:14px">No news yet.</div>';
 }
