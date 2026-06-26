@@ -1,0 +1,25 @@
+name: backfill-photos
+
+# One-off / on-demand: fill image_url for existing news with Pexels photos.
+# Run from the Actions tab (Run workflow). Needs PEXELS_API_KEY secret.
+on:
+  workflow_dispatch:
+    inputs:
+      overwrite:
+        description: "Overwrite existing photos (1=yes)"
+        default: "0"
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r news-pipeline/requirements.txt
+      - env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          OVERWRITE: ${{ github.event.inputs.overwrite }}
+        run: python news-pipeline/backfill_photos.py
