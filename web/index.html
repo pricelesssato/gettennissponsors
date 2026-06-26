@@ -161,7 +161,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
 <header class="hdr">
   <div class="top">
     <a class="logo" href="./index.html"><img src="./assets/logo.png" alt="GetTennisSponsors — by Tennis Collective"></a>
-    <div class="search"><input id="q" type="search" placeholder="Search sponsorship news, players, brands…"></div>
+    <form class="search" onsubmit="return gtsSearch(event)"><input id="q" type="search" placeholder="Search sponsorship news, players, brands…"></form>
     <div class="act">
       <a href="#organisers">For organisers</a>
       <a href="#apply">Get sponsors</a>
@@ -296,7 +296,9 @@ async function load(){
   ALL=data||[];
   const p=new URLSearchParams(location.search);
   const q=p.get('q'), c=p.get('cat');
-  if(q){Q=q.toLowerCase();const qi=document.getElementById('q');if(qi)qi.value=q;}
+  if(q){Q=q.toLowerCase();const qi=document.getElementById('q');if(qi)qi.value=q;
+    document.getElementById('feedhead').textContent='Search results: “'+q+'”';
+    document.getElementById('feedcount').innerHTML='<a href="./index.html" style="color:var(--green);font-weight:700;text-decoration:none">✕ Clear search</a>';}
   if(c&&['tournament','club','player','other'].includes(c)){CAT=c;
     document.querySelectorAll('#cats button').forEach(b=>b.classList.toggle('on',b.dataset.f===c));
     document.getElementById('feedhead').textContent=TYPE_LABEL[c]+' sponsor news';}
@@ -339,10 +341,12 @@ function renderRank(){
       <span><span class="rt">${esc(n.title)}</span><span class="rm">${esc(n.author_name)} · ${relTime(n.published_at)}</span></span></a>`).join('')
     ||'<div class="empty" style="padding:14px">No news yet.</div>';
 }
-window.setCat=(c)=>{CAT=c;PAGE=0;document.querySelectorAll('#cats button').forEach(b=>b.classList.toggle('on',b.dataset.f===c));
+window.setCat=(c)=>{CAT=c;PAGE=0;Q='';const qi=document.getElementById('q');if(qi)qi.value='';
+  document.getElementById('feedcount').textContent='';
+  document.querySelectorAll('#cats button').forEach(b=>b.classList.toggle('on',b.dataset.f===c));
   document.getElementById('feedhead').textContent=c==='all'?'Latest sponsor news':TYPE_LABEL[c]+' sponsor news';
   render();window.scrollTo({top:0,behavior:'smooth'});};
-document.getElementById('q').addEventListener('input',e=>{Q=e.target.value.trim().toLowerCase();PAGE=0;render();});
+window.gtsSearch=(e)=>{e.preventDefault();const v=document.getElementById('q').value.trim();location.href='./index.html'+(v?('?q='+encodeURIComponent(v)):'');return false;};
 
 async function submitApply(){
   if(!requireConfig())return;
