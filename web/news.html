@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--green:#0F4D34;--green-2:#15573C;--accent:#C8DC2B;--ink:#16241D;--muted:#6E756F;
+:root{--green:#0F4D34;--green-2:#15573C;--green-3:#0A3A27;--accent:#C8DC2B;--ink:#16241D;--muted:#6E756F;
   --line:#E4E8E3;--line-2:#D2D8D0;--bg:#F4F6F3;--surface:#FFFFFF;--red:#B23A48;--blue:#2563A8;
   --radius:14px;--shadow:0 1px 2px rgba(20,40,30,.05),0 8px 24px rgba(20,40,30,.06);}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -31,6 +31,16 @@ a{color:var(--blue);}
 .act .login{border:1px solid var(--line-2);padding:8px 13px;border-radius:9px;color:var(--green);}
 .act .post{background:var(--green);color:#fff;padding:9px 15px;border-radius:9px;}
 @media(max-width:780px){.act a:not(.post){display:none;}.search{max-width:none;}.logo img{height:64px;}}
+.catbar{border-top:1px solid var(--line);background:var(--surface);}
+.catbar .inner{display:flex;gap:4px;padding:0 24px;max-width:1180px;margin:0 auto;overflow-x:auto;}
+.catbar a{font-size:13px;font-weight:700;color:var(--muted);padding:11px 13px;text-decoration:none;white-space:nowrap;}
+.catbar a:hover{color:var(--green);}
+.strip{background:linear-gradient(135deg,var(--green-3),var(--green) 60%,var(--green-2));color:#fff;}
+.strip .inner{max-width:1180px;margin:0 auto;padding:22px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.strip .t{font-size:20px;font-weight:900;letter-spacing:-.01em;}
+.strip .s{font-size:13px;opacity:.9;margin-top:3px;}
+.strip .chips{display:flex;gap:8px;flex-wrap:wrap;}
+.strip .chip{font-size:11.5px;font-weight:600;color:#eaf2ed;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:6px 11px;}
 .wrap{max-width:1000px;margin:0 auto;padding:30px 22px 70px;}
 .head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:6px;}
 .h1{font-size:24px;font-weight:900;}
@@ -78,7 +88,19 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
     <a class="login" href="./news.html">Log in / Sign up</a>
     <a class="post" href="./news.html">＋ Post your news</a>
   </div>
-</div></header>
+</div>
+  <div class="catbar"><div class="inner">
+    <a href="./index.html">All</a>
+    <a href="./index.html?cat=tournament">Tournaments</a>
+    <a href="./index.html?cat=club">Clubs</a>
+    <a href="./index.html?cat=player">Players</a>
+    <a href="./index.html?cat=other">Other</a>
+  </div></div>
+</header>
+<div class="strip"><div class="inner">
+  <div><div class="t">Where tennis gets sponsored.</div><div class="s">The tennis sponsorship press-release platform — operated by Tennis Collective.</div></div>
+  <div class="chips"><span class="chip">Global · English</span><span class="chip">Outreach handled for you</span><span class="chip">Measured results</span></div>
+</div></div>
 
 <div class="wrap">
   <div class="head">
