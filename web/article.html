@@ -69,7 +69,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 .body{font-size:16px;line-height:1.85;color:#1f2c25;}
 .body p{margin-bottom:16px;}
 .srcbox{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13px;}
-.srcbox a{font-weight:700;}
+.srcbox a{font-weight:700;word-break:break-word;overflow-wrap:anywhere;}
 .share{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap;}
 .share button{font-size:13px;font-weight:700;padding:9px 14px;border-radius:9px;border:1px solid var(--line-2);background:var(--surface);color:#2c3a31;}
 .share button:hover{border-color:var(--green);color:var(--green);}
@@ -180,7 +180,7 @@ async function render(){
       <div><div class="nm">${esc(n.author_name)}</div><div class="ro">${isOp?'Curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this news'}</div></div>
     </div>
     <div class="body">${(n.body||'').split(/\n+/).filter(Boolean).map(p=>`<p>${markBrand(p, n.sponsor_name||'')}</p>`).join('')||'<p class="state">No details provided.</p>'}</div>
-    ${n.link_url?`<div class="srcbox">Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">${esc(n.link_url)}</a></div>`:''}
+    ${n.link_url?`<div class="srcbox">Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">View original article ↗</a></div>`:''}
     <div class="share">
       <button id="sh-x">Share on X</button>
       <button id="sh-li">LinkedIn</button>
