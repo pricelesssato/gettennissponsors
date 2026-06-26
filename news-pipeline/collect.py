@@ -35,6 +35,13 @@ QUERIES = [
     "tennis academy sponsor",
     "tennis club sponsor",
     "team tennis league sponsor",
+    # players (pro + amateur) and specific events (keep Players/Tournaments growing)
+    "tennis player signs sponsor",
+    "tennis player endorsement deal",
+    "tennis player apparel deal",
+    "tennis tournament title sponsor",
+    "junior tennis sponsorship",
+    "college tennis sponsorship",
 ]
 
 # Only items whose article domain ends with one of these are eligible.
@@ -149,11 +156,18 @@ PROMPT = """You are the editor of a tennis sponsorship news feed whose readers i
 
 If relevant, write an editorial summary that DOUBLES AS POSITIVE EXPOSURE for the sponsor brand: name the brand, what it is sponsoring, and the visibility/value it gains (events, audience, activation, term). Stay factual and grounded in the item — do NOT invent figures; if unknown, keep it general. Frame why it matters for tennis sponsorship.
 
+Also CLASSIFY the subject into one category:
+- "tournament": a specific event, tournament, circuit, tour-wide or federation/Grand Slam deal
+- "club": a tennis club, academy, development centre, or team-tennis league/franchise
+- "player": an individual player (pro or amateur)
+- "other": brand-level/media/data/market items that don't fit the above
+
 Return ONLY compact JSON:
 {{"relevant": true|false,
   "headline": "<clean English headline, <=90 chars, factual, no clickbait>",
   "blurb": "<3-5 factual English sentences (roughly 60-110 words) summarising the deal and the sponsor's exposure/benefit>",
   "author_name": "<the sponsor brand or governing body that is the subject, e.g. 'Mercedes-Benz' or 'ATP Tour'>",
+  "category": "tournament|club|player|other",
   "country": "<ISO 3166-1 alpha-2 if clearly identifiable, else null>"}}
 
 If it is not clearly a tennis sponsorship/partnership/commercial deal, return {{"relevant": false}} only.
@@ -210,7 +224,7 @@ def insert(item, cls):
         "body": cls.get("blurb") or "",
         "author_name": "GetTennisSponsors",                 # poster = the platform
         "sponsor_name": cls.get("author_name") or None,     # brand to highlight
-        "author_type": "other",                             # subject category (default bucket)
+        "author_type": (cls.get("category") if cls.get("category") in ("player", "club", "tournament", "other") else "other"),
         "country": (cls.get("country") or None),
         "link_url": item["url"],
         "image_url": photo_for(item),
