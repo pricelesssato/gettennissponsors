@@ -41,6 +41,8 @@ a{color:inherit;text-decoration:none;}
 .catbar .inner{display:flex;gap:4px;padding:0 22px;max-width:1180px;margin:0 auto;overflow-x:auto;}
 .catbar button{font-size:13px;font-weight:700;color:var(--muted);padding:11px 13px;border-bottom:2px solid transparent;white-space:nowrap;}
 .catbar button.on{color:var(--green);border-bottom-color:var(--green);}
+.catbar .cnt{font-family:"Roboto Mono";font-size:10px;color:var(--muted);background:var(--bg);border-radius:999px;padding:1px 6px;margin-left:3px;}
+.catbar button.on .cnt{background:#e6f0ea;color:var(--green);}
 @media(max-width:780px){.hdr .act a:not(.post){display:none;}.search{max-width:none;}}
 
 /* ===== slim hero strip ===== */
@@ -79,6 +81,10 @@ a{color:inherit;text-decoration:none;}
 mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%);color:inherit;font-weight:800;padding:0 1px;border-radius:2px;}
 .rel .ex{font-size:12.5px;color:#566;line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .empty,.loading{color:var(--muted);font-size:13.5px;padding:30px 4px;}
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;padding:22px 0 4px;}
+.pager button{font-size:13px;font-weight:700;color:var(--green);border:1px solid var(--line-2);background:var(--surface);padding:8px 16px;border-radius:9px;}
+.pager button:disabled{color:var(--muted);background:var(--bg);cursor:default;border-color:var(--line);}
+.pager .pinfo{font-size:12.5px;color:var(--muted);font-family:"Roboto Mono";}
 @media(max-width:540px){.rel .thumb{width:96px;height:72px;font-size:22px;}.rel h3{font-size:14.5px;}.rel .ex{display:none;}}
 
 /* sidebar */
@@ -162,11 +168,11 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
     </div>
   </div>
   <div class="catbar"><div class="inner" id="cats">
-    <button class="on" data-f="all" onclick="setCat('all')">All</button>
-    <button data-f="tournament" onclick="setCat('tournament')">Tournaments</button>
-    <button data-f="club" onclick="setCat('club')">Clubs</button>
-    <button data-f="player" onclick="setCat('player')">Players</button>
-    <button data-f="other" onclick="setCat('other')">Other</button>
+    <button class="on" data-f="all" onclick="setCat('all')">All <span class="cnt" id="cnt-all"></span></button>
+    <button data-f="tournament" onclick="setCat('tournament')">Tournaments <span class="cnt" id="cnt-tournament"></span></button>
+    <button data-f="club" onclick="setCat('club')">Clubs <span class="cnt" id="cnt-club"></span></button>
+    <button data-f="player" onclick="setCat('player')">Players <span class="cnt" id="cnt-player"></span></button>
+    <button data-f="other" onclick="setCat('other')">Other <span class="cnt" id="cnt-other"></span></button>
   </div></div>
 </header>
 
@@ -179,17 +185,14 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
 <!-- ===== portal ===== -->
 <div class="shell">
   <main>
-    <div class="sectitle"><h2 id="feedhead">Latest news</h2><span class="n" id="feedcount"></span></div>
+    <div class="sectitle"><h2 id="feedhead">Latest sponsor news</h2><span class="n" id="feedcount"></span></div>
     <div class="feed" id="feed"><div class="loading">Loading news…</div></div>
+    <div class="pager" id="pager"></div>
   </main>
   <aside class="side">
     <div class="box">
       <div class="bh"><span class="bar"></span>Recent headlines</div>
       <div class="rank" id="rank"></div>
-    </div>
-    <div class="box">
-      <div class="bh"><span class="bar"></span>Browse by type</div>
-      <div class="catlist" id="catlist"></div>
     </div>
     <div class="box promo green">
       <h4>Got sponsorship news?</h4>
@@ -281,7 +284,7 @@ function relTime(d){const s=(Date.now()-new Date(d).getTime())/1000;
 function hue(s){let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h;}
 window.go=(id)=>document.getElementById(id).scrollIntoView({behavior:'smooth'});
 
-let ALL=[], CAT='all', Q='';
+let ALL=[], CAT='all', Q='', PAGE=0; const PER=20;
 function cat(n){return n.author_type||'other';}
 
 async function load(){
@@ -289,15 +292,24 @@ async function load(){
   const {data,error}=await supabase.from('public_news').select('*').order('published_at',{ascending:false});
   if(error){document.getElementById('feed').innerHTML='<div class="empty">Could not load news: '+error.message+'</div>';return;}
   ALL=data||[];
-  renderRank(); renderCatList(); render();
+  renderRank(); updateTabCounts(); render();
+}
+function updateTabCounts(){
+  const counts={all:ALL.length};
+  ALL.forEach(n=>{const c=cat(n);counts[c]=(counts[c]||0)+1;});
+  ['all','tournament','club','player','other'].forEach(c=>{
+    const el=document.getElementById('cnt-'+c); if(el) el.textContent=counts[c]||0;});
 }
 function filtered(){
   return ALL.filter(n=>(CAT==='all'||cat(n)===CAT)&&(!Q||((n.title+' '+n.author_name+' '+(n.body||'')).toLowerCase().includes(Q))));
 }
 function render(){
   const list=filtered();
-  document.getElementById('feedcount').textContent=list.length+(list.length===1?' story':' stories');
-  document.getElementById('feed').innerHTML = list.length? list.map(n=>{
+  const total=list.length, pages=Math.max(1,Math.ceil(total/PER));
+  if(PAGE>=pages) PAGE=0;
+  const slice=list.slice(PAGE*PER,PAGE*PER+PER);
+  document.getElementById('feedcount').textContent=total+(total===1?' story':' stories');
+  document.getElementById('feed').innerHTML = slice.length? slice.map(n=>{
     const isOp=n.source==='operator';
     const brand=n.sponsor_name||'';
     const thumb=n.image_url?`<img src="${esc(n.image_url)}" alt="">`:newsThumb(n);
@@ -309,6 +321,15 @@ function render(){
         <div class="meta"><span class="au">${esc(n.author_name)}</span>${brand?` · <span class="sp">Sponsor</span> ${esc(brand)}`:''}${n.country?` · <span class="flag">${esc(n.country)}</span>`:''} · <span>${relTime(n.published_at)}</span></div>
         ${n.body?`<div class="ex">${markBrand(n.body, brand)}</div>`:''}
       </div></a>`;}).join('') : '<div class="empty">No stories match. Try another category or search.</div>';
+  renderPager(total,pages);
+}
+function renderPager(total,pages){
+  const p=document.getElementById('pager');
+  if(total<=PER){p.innerHTML='';return;}
+  p.innerHTML=`<button id="pgprev" ${PAGE===0?'disabled':''}>← Prev</button><span class="pinfo">Page ${PAGE+1} / ${pages}</span><button id="pgnext" ${PAGE>=pages-1?'disabled':''}>Next →</button>`;
+  const pv=document.getElementById('pgprev'),nx=document.getElementById('pgnext');
+  if(pv)pv.onclick=()=>{if(PAGE>0){PAGE--;render();window.scrollTo({top:0,behavior:'smooth'});}};
+  if(nx)nx.onclick=()=>{if(PAGE<pages-1){PAGE++;render();window.scrollTo({top:0,behavior:'smooth'});}};
 }
 function renderRank(){
   const list=ALL.slice(0,6);
@@ -317,16 +338,10 @@ function renderRank(){
       <span><span class="rt">${esc(n.title)}</span><span class="rm">${esc(n.author_name)} · ${relTime(n.published_at)}</span></span></a>`).join('')
     ||'<div class="empty" style="padding:14px">No news yet.</div>';
 }
-function renderCatList(){
-  const counts={};ALL.forEach(n=>{const c=cat(n);counts[c]=(counts[c]||0)+1;});
-  const order=['tournament','club','player','other'];
-  document.getElementById('catlist').innerHTML=order.filter(c=>counts[c]).map(c=>`
-    <button onclick="setCat('${c}')">${TYPE_LABEL[c]}<span class="c">${counts[c]}</span></button>`).join('');
-}
-window.setCat=(c)=>{CAT=c;document.querySelectorAll('#cats button').forEach(b=>b.classList.toggle('on',b.dataset.f===c));
-  document.getElementById('feedhead').textContent=c==='all'?'Latest news':TYPE_LABEL[c]+' news';
+window.setCat=(c)=>{CAT=c;PAGE=0;document.querySelectorAll('#cats button').forEach(b=>b.classList.toggle('on',b.dataset.f===c));
+  document.getElementById('feedhead').textContent=c==='all'?'Latest sponsor news':TYPE_LABEL[c]+' sponsor news';
   render();window.scrollTo({top:0,behavior:'smooth'});};
-document.getElementById('q').addEventListener('input',e=>{Q=e.target.value.trim().toLowerCase();render();});
+document.getElementById('q').addEventListener('input',e=>{Q=e.target.value.trim().toLowerCase();PAGE=0;render();});
 
 async function submitApply(){
   if(!requireConfig())return;
