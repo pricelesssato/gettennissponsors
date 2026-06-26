@@ -23,3 +23,9 @@ jobs:
           PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           MAX_PUBLISH: "10"
         run: python news-pipeline/collect.py
+      - name: Backfill photos for any rows still missing one
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: python news-pipeline/backfill_photos.py

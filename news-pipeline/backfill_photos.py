@@ -44,7 +44,8 @@ def pexels(query, pick):
     return p.get("src", {}).get("landscape") or p.get("src", {}).get("large")
 
 def rows():
-    params = {"select": "id,title,author_type,image_url", "source": "eq.operator", "limit": "500"}
+    # all news missing a photo (operator + self posts)
+    params = {"select": "id,title,author_type,image_url", "limit": "1000"}
     r = requests.get(f"{SUPABASE_URL}/rest/v1/news_posts", params=params,
                      headers={"apikey": SERVICE_ROLE, "Authorization": f"Bearer {SERVICE_ROLE}"}, timeout=30)
     r.raise_for_status(); return r.json()

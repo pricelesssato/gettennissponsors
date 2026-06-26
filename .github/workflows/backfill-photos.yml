@@ -3,6 +3,8 @@ name: backfill-photos
 # One-off / on-demand: fill image_url for existing news with Pexels photos.
 # Run from the Actions tab (Run workflow). Needs PEXELS_API_KEY secret.
 on:
+  schedule:
+    - cron: "30 23 * * *"   # daily 23:30 UTC — auto-fill any photo-less news
   workflow_dispatch:
     inputs:
       overwrite:
