@@ -167,13 +167,23 @@ function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt
 function fmtDateTime(d){try{return new Date(d).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});}catch(e){return '';}}
 let SESSION=null, PROFILE=null, EDIT_ID=null, NEWS_IMG=null;
 
+let READY=false;
 async function init(){
   if(!requireConfig())return;
+  supabase.auth.onAuthStateChange(async(event,s)=>{
+    if(event==='SIGNED_OUT'){ SESSION=null;PROFILE=null;renderAuth();renderStudio();return; }
+    if((event==='SIGNED_IN'||event==='INITIAL_SESSION') && s){
+      const changed = !SESSION || SESSION.user.id!==s.user.id;   // ignore token refreshes
+      SESSION=s;
+      if(changed && READY){ await loadProfile(); renderAuth(); renderStudio(); }
+    }
+    // TOKEN_REFRESHED / USER_UPDATED: do nothing (keeps the form intact)
+  });
   const {data:{session}}=await supabase.auth.getSession();
   SESSION=session;
   if(SESSION) await loadProfile();
   renderAuth(); renderStudio();
-  supabase.auth.onAuthStateChange(async(_e,s)=>{SESSION=s;if(s)await loadProfile();renderAuth();renderStudio();});
+  READY=true;
 }
 async function loadProfile(){
   const {data}=await supabase.from('member_profiles').select('*').eq('id',SESSION.user.id).maybeSingle();
