@@ -51,6 +51,9 @@ LOOKBACK_DEDUPE = 400  # how many recent operator posts to check for dup links
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SERVICE_ROLE = os.environ.get("SUPABASE_SERVICE_ROLE", "")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+PEXELS_KEY = os.environ.get("PEXELS_API_KEY", "")  # optional: relevant photo thumbnails
+PEXELS_QUERIES = ["tennis player serve", "tennis stadium crowd", "tennis court lines",
+                  "professional tennis action", "tennis racket and ball", "tennis arena night"]
 
 
 def die(msg):
@@ -177,15 +180,35 @@ def classify(client, item):
         return {"relevant": False}
 
 
+# ---- optional relevant photo (Pexels: free, commercial-OK, no attribution) ---
+def photo_for(item):
+    if not PEXELS_KEY:
+        return None
+    q = PEXELS_QUERIES[hash(item["url"]) % len(PEXELS_QUERIES)]
+    try:
+        r = requests.get("https://api.pexels.com/v1/search",
+                         params={"query": q, "per_page": 15, "orientation": "landscape"},
+                         headers={"Authorization": PEXELS_KEY}, timeout=30)
+        photos = r.json().get("photos", []) if r.status_code == 200 else []
+        if not photos:
+            return None
+        p = photos[abs(hash(item["title"])) % len(photos)]
+        return p.get("src", {}).get("landscape") or p.get("src", {}).get("large")
+    except Exception as e:
+        print(f"  pexels failed: {e}")
+        return None
+
 # ---- insert ----------------------------------------------------------
 def insert(item, cls):
     body = {
         "title": cls.get("headline") or item["title"][:120],
         "body": cls.get("blurb") or "",
-        "author_name": cls.get("author_name") or item["outlet"] or domain_of(item["url"]) or "Curated",
-        "author_type": "operator",
+        "author_name": "GetTennisSponsors",                 # poster = the platform
+        "sponsor_name": cls.get("author_name") or None,     # brand to highlight
+        "author_type": "other",                             # subject category (default bucket)
         "country": (cls.get("country") or None),
         "link_url": item["url"],
+        "image_url": photo_for(item),
         "source": "operator",
         "status": "published",
     }

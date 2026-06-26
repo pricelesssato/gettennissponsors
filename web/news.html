@@ -230,8 +230,8 @@ async function loadFeed(){
         ${n.country?`<span class="flag">${esc(n.country)}</span>`:''}
         <span>${fmtDate(n.published_at)}</span>
       </div>
-      <h3><a href="./article.html?id=${n.id}" style="color:inherit">${markBrand(n.title, n.source==='operator'?n.author_name:'')}</a></h3>
-      ${n.body?`<p>${markBrand(n.body, n.source==='operator'?n.author_name:'')}</p>`:''}
+      <h3><a href="./article.html?id=${n.id}" style="color:inherit">${markBrand(n.title, n.sponsor_name||'')}</a></h3>
+      ${n.body?`<p>${markBrand(n.body, n.sponsor_name||'')}</p>`:''}
       <div class="src" style="font-size:12px;margin-top:8px"><a href="./article.html?id=${n.id}" style="font-weight:700">Read →</a>${n.link_url?` · Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">link</a>`:''}</div>
     </div>`).join('');
 }

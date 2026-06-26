@@ -122,16 +122,17 @@ async function render(){
   art.innerHTML=`
     <div class="arthero">${n.image_url?`<img src="${esc(n.image_url)}" alt="">`:newsThumb(n)}</div>
     <div class="metarow">
-      <span class="badge ${isOp?'operator':'self'}">${isOp?'⭐ Curated':'🎾 Win'}</span>
-      ${n.country?`<span class="flag">${esc(n.country)}</span> ${esc(countryName(n.country))}`:''}
+      <span class="badge ${isOp?'operator':'self'}">${isOp?'⭐ Curated':'🎾 News'}</span>
+      ${n.sponsor_name?`<span class="sptag">Sponsor</span> <strong style="color:#2c3a31">${esc(n.sponsor_name)}</strong>`:''}
+      ${n.country?`· <span class="flag">${esc(n.country)}</span> ${esc(countryName(n.country))}`:''}
       <span>· ${fmtDate(n.published_at)}</span>
     </div>
-    <h1 class="title">${markBrand(n.title, isOp?n.author_name:'')}</h1>
+    <h1 class="title">${markBrand(n.title, n.sponsor_name||'')}</h1>
     <div class="authorline">
       <div class="av">${esc(initial)}</div>
-      <div><div class="nm">${esc(n.author_name)} ${isOp?'<span class="sptag">Sponsor</span>':''}</div><div class="ro">${isOp?'Sponsor brand · curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this win'}</div></div>
+      <div><div class="nm">${esc(n.author_name)}</div><div class="ro">${isOp?'Curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this news'}</div></div>
     </div>
-    <div class="body">${(n.body||'').split(/\n+/).filter(Boolean).map(p=>`<p>${markBrand(p, isOp?n.author_name:'')}</p>`).join('')||'<p class="state">No details provided.</p>'}</div>
+    <div class="body">${(n.body||'').split(/\n+/).filter(Boolean).map(p=>`<p>${markBrand(p, n.sponsor_name||'')}</p>`).join('')||'<p class="state">No details provided.</p>'}</div>
     ${n.link_url?`<div class="srcbox">Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">${esc(n.link_url)}</a></div>`:''}
     <div class="share">
       <button id="sh-x">Share on X</button>

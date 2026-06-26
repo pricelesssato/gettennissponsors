@@ -31,8 +31,11 @@ a{color:inherit;text-decoration:none;}
 .hdr .act{display:flex;align-items:center;gap:14px;flex:0 0 auto;margin-left:auto;}
 .hdr .act a{font-size:13px;font-weight:700;color:#2c3a31;}
 .hdr .act a:hover{color:var(--green);}
+.hdr .act .login{border:1px solid var(--line-2);padding:8px 13px;border-radius:9px;color:var(--green);}
+.hdr .act .login:hover{border-color:var(--green);background:var(--bg);}
 .hdr .act .post{background:var(--green);color:#fff;padding:9px 15px;border-radius:9px;}
 .hdr .act .post:hover{color:#fff;background:var(--green-2);}
+@media(max-width:780px){.hdr .act .login{display:inline-block;}}
 .catbar{border-top:1px solid var(--line);background:var(--surface);}
 .catbar .inner{display:flex;gap:4px;padding:0 22px;max-width:1180px;margin:0 auto;overflow-x:auto;}
 .catbar button{font-size:13px;font-weight:700;color:var(--muted);padding:11px 13px;border-bottom:2px solid transparent;white-space:nowrap;}
@@ -153,16 +156,15 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
     <div class="act">
       <a href="#organisers">For organisers</a>
       <a href="#apply">Get sponsors</a>
-      <a href="./news.html">Sign in</a>
-      <a class="post" href="./news.html">＋ Post your win</a>
+      <a class="login" href="./news.html">Log in / Sign up</a>
+      <a class="post" href="./news.html">＋ Post your news</a>
     </div>
   </div>
   <div class="catbar"><div class="inner" id="cats">
     <button class="on" data-f="all" onclick="setCat('all')">All</button>
-    <button data-f="operator" onclick="setCat('operator')">Editorial</button>
-    <button data-f="player" onclick="setCat('player')">Players</button>
-    <button data-f="club" onclick="setCat('club')">Clubs</button>
     <button data-f="tournament" onclick="setCat('tournament')">Tournaments</button>
+    <button data-f="club" onclick="setCat('club')">Clubs</button>
+    <button data-f="player" onclick="setCat('player')">Players</button>
     <button data-f="other" onclick="setCat('other')">Other</button>
   </div></div>
 </header>
@@ -189,9 +191,9 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
       <div class="catlist" id="catlist"></div>
     </div>
     <div class="box promo green">
-      <h4>Got a sponsorship win?</h4>
-      <p>Players, clubs and tournaments — post your news and reach the tennis sponsorship community.</p>
-      <a class="b" href="./news.html">Post your win</a>
+      <h4>Got sponsorship news?</h4>
+      <p>Landed a sponsor? Companies and individuals can post their news and reach the tennis sponsorship community.</p>
+      <a class="b" href="./news.html">＋ Post your news</a>
     </div>
     <div class="box promo">
       <h4>Want sponsors? (private)</h4>
@@ -279,7 +281,7 @@ function hue(s){let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;re
 window.go=(id)=>document.getElementById(id).scrollIntoView({behavior:'smooth'});
 
 let ALL=[], CAT='all', Q='';
-function cat(n){return n.source==='operator'?'operator':(n.author_type||'other');}
+function cat(n){return n.author_type||'other';}
 
 async function load(){
   if(!requireConfig())return;
@@ -296,14 +298,15 @@ function render(){
   document.getElementById('feedcount').textContent=list.length+(list.length===1?' story':' stories');
   document.getElementById('feed').innerHTML = list.length? list.map(n=>{
     const isOp=n.source==='operator';
+    const brand=n.sponsor_name||'';
     const thumb=n.image_url?`<img src="${esc(n.image_url)}" alt="">`:newsThumb(n);
     return `<a class="rel" href="./article.html?id=${n.id}">
       <div class="thumb">${thumb}</div>
       <div class="body">
-        <div class="toprow"><span class="badge ${isOp?'operator':'self'}">${isOp?'⭐ Curated':'🎾 Win'}</span><span class="cat">${TYPE_LABEL[cat(n)]||''}</span></div>
-        <h3>${markBrand(n.title, isOp?n.author_name:'')}</h3>
-        <div class="meta">${isOp?'<span class="sp">Sponsor</span> ':''}<span class="au">${esc(n.author_name)}</span>${n.country?` · <span class="flag">${esc(n.country)}</span>`:''} · <span>${relTime(n.published_at)}</span></div>
-        ${n.body?`<div class="ex">${markBrand(n.body, isOp?n.author_name:'')}</div>`:''}
+        <div class="toprow"><span class="badge ${isOp?'operator':'self'}">${isOp?'⭐ Curated':'🎾 News'}</span><span class="cat">${TYPE_LABEL[cat(n)]||''}</span></div>
+        <h3>${markBrand(n.title, brand)}</h3>
+        <div class="meta"><span class="au">${esc(n.author_name)}</span>${brand?` · <span class="sp">Sponsor</span> ${esc(brand)}`:''}${n.country?` · <span class="flag">${esc(n.country)}</span>`:''} · <span>${relTime(n.published_at)}</span></div>
+        ${n.body?`<div class="ex">${markBrand(n.body, brand)}</div>`:''}
       </div></a>`;}).join('') : '<div class="empty">No stories match. Try another category or search.</div>';
 }
 function renderRank(){
@@ -315,7 +318,7 @@ function renderRank(){
 }
 function renderCatList(){
   const counts={};ALL.forEach(n=>{const c=cat(n);counts[c]=(counts[c]||0)+1;});
-  const order=['operator','player','club','tournament','other'];
+  const order=['tournament','club','player','other'];
   document.getElementById('catlist').innerHTML=order.filter(c=>counts[c]).map(c=>`
     <button onclick="setCat('${c}')">${TYPE_LABEL[c]}<span class="c">${counts[c]}</span></button>`).join('');
 }

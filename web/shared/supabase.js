@@ -68,9 +68,8 @@ function thumbPattern(i, op) {
   }
 }
 export function newsThumb(n) {
-  const name = (n.author_name || "GetTennisSponsors").trim();
-  const cat = (n.source === "operator" ? "Curated"
-    : ({ player: "Player", club: "Club", tournament: "Tournament" }[n.author_type] || "News"));
+  const name = (n.sponsor_name || n.author_name || "GetTennisSponsors").trim();
+  const cat = ({ player: "Player", club: "Club", tournament: "Tournament" }[n.author_type] || "News");
   const dom = thumbDomain(n.link_url || "");
   const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   let h = 0; const key = name + "|" + dom; for (const ch of key) h = (h * 33 + ch.charCodeAt(0)) >>> 0;
