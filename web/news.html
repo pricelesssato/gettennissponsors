@@ -95,7 +95,6 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
   <div class="act">
     <a href="./index.html#organisers">For organisers</a>
     <a href="./index.html#apply">Get sponsors</a>
-    <a class="login" href="./news.html">Log in / Sign up</a>
     <a class="post" href="./news.html">＋ Post your news</a>
   </div>
 </div>
@@ -114,14 +113,12 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 
 <div class="wrap">
   <div class="head">
-    <div><div class="h1">News &amp; Press</div></div>
+    <div><div class="h1">Post your news</div></div>
     <div id="authbar"></div>
   </div>
-  <div class="secsub">Sponsorship wins and tennis sponsorship news. Players, clubs and tournaments post their own; our team curates news worldwide.</div>
+  <div class="secsub"><a href="./index.html" style="font-weight:700">← Back to the news feed</a></div>
 
   <div id="studio"></div>
-
-  <div class="feed" id="feed"><div class="loading">Loading news…</div></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -142,7 +139,6 @@ async function init(){
   SESSION=session;
   if(SESSION) await loadProfile();
   renderAuth(); renderStudio();
-  await loadFeed();
   supabase.auth.onAuthStateChange(async(_e,s)=>{SESSION=s;if(s)await loadProfile();renderAuth();renderStudio();});
 }
 async function loadProfile(){
@@ -164,12 +160,19 @@ function renderStudio(){
   const s=document.getElementById('studio');
   if(!SESSION){
     s.innerHTML=`<div class="panel">
-      <h2>Post your news</h2>
-      <div class="fl">Players, clubs and tournaments — sign in to post, upload images, schedule and manage your own news. You'll get a one-time login link by email (no password).</div>
+      <h2>Create your account &amp; post your news</h2>
+      <div class="fl">For players, clubs and tournaments — share your sponsorship news with the tennis community. Free.</div>
+      <ol style="margin:2px 0 16px 18px;color:#2c3a31;font-size:13px;line-height:1.95">
+        <li>Enter your email — we send a one-time link (no password).</li>
+        <li>Set up your profile &amp; mark (logo / photo).</li>
+        <li>Write your news, add a photo, publish now or schedule.</li>
+      </ol>
       <div class="row2">
         <div class="field"><label>Email</label><input id="li-email" type="email" placeholder="you@example.com"></div>
         <div class="field" style="display:flex;align-items:flex-end"><button class="pbtn" id="li-btn" style="width:100%">Send login link</button></div>
-      </div></div>`;
+      </div>
+      <div class="hint">New here? The link creates your account. Already registered? The same link logs you in.</div>
+    </div>`;
     document.getElementById('li-btn').onclick=login;
     return;
   }
@@ -342,7 +345,7 @@ async function savePost(){
   btn.disabled=false; onVis();
   if(error){toast('Error: '+error.message,true);return;}
   toast(EDIT_ID?'Saved':(status==='draft'?'Saved as draft':status==='scheduled'?'Scheduled':'Published'));
-  EDIT_ID=null; clearForm(); await Promise.all([loadFeed(),loadMine()]);
+  EDIT_ID=null; clearForm(); await loadMine();
 }
 
 /* ---- my posts ---- */
@@ -377,7 +380,7 @@ async function setStatus(id,status,published_at){
   const patch={status}; if(published_at!==undefined) patch.published_at=published_at;
   const {error}=await supabase.from('news_posts').update(patch).eq('id',id);
   if(error){toast('Error: '+error.message,true);return;}
-  toast(status==='published'?'Published':'Unpublished'); await Promise.all([loadFeed(),loadMine()]);
+  toast(status==='published'?'Published':'Unpublished'); await loadMine();
 }
 function startEdit(n){EDIT_ID=n.id;
   document.getElementById('n-title').value=n.title||'';
@@ -403,29 +406,9 @@ async function del(id){
   if(!confirm('Delete this post?'))return;
   const {error}=await supabase.from('news_posts').delete().eq('id',id);
   if(error){toast('Error: '+error.message,true);return;}
-  toast('Deleted'); await Promise.all([loadFeed(),loadMine()]);
+  toast('Deleted'); await loadMine();
 }
 
-/* ---- public feed ---- */
-async function loadFeed(){
-  const {data,error}=await supabase.from('public_news').select('*').order('published_at',{ascending:false}).limit(40);
-  const feed=document.getElementById('feed');
-  if(error){feed.innerHTML='<div class="empty">Could not load news: '+error.message+'</div>';return;}
-  if(!data.length){feed.innerHTML='<div class="empty">No news yet.</div>';return;}
-  feed.innerHTML=data.map(n=>`
-    <div class="ncard">
-      <div class="meta">
-        <span class="badge ${n.source==='operator'?'operator':'self'}">${n.source==='operator'?'Curated':'Posted'}</span>
-        ${n.author_avatar?`<img class="av-mini" src="${esc(n.author_avatar)}">`:''}
-        <strong style="color:#2c3a31">${esc(n.author_name)}</strong>
-        ${n.country?`<span class="flag">${esc(n.country)}</span>`:''}
-        <span>${fmtDateTime(n.published_at)}</span>
-      </div>
-      <h3><a href="${n.slug?('./article?n='+n.slug):('./article?id='+n.id)}" style="color:inherit">${markBrand(n.title, n.sponsor_name||'')}</a></h3>
-      ${n.body?`<p>${markBrand(n.body, n.sponsor_name||'')}</p>`:''}
-      <div class="src" style="font-size:12px;margin-top:8px"><a href="${n.slug?('./article?n='+n.slug):('./article?id='+n.id)}" style="font-weight:700">Read →</a>${n.link_url?` · Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">link</a>`:''}</div>
-    </div>`).join('');
-}
 init();
 </script>
 </body>

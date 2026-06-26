@@ -91,7 +91,6 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
   <div class="act">
     <a href="./index.html#organisers">For organisers</a>
     <a href="./index.html#apply">Get sponsors</a>
-    <a class="login" href="./news.html">Log in / Sign up</a>
     <a class="post" href="./news.html">＋ Post your news</a>
   </div>
 </div>
@@ -109,7 +108,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 </div></div>
 
 <div class="wrap">
-  <a class="back" href="./news.html">← All news</a>
+  <a class="back" href="./index.html" onclick="return gtsBack()">← Back</a>
   <article id="article"><div class="state">Loading…</div></article>
   <div class="more" id="more"></div>
 </div>
@@ -125,6 +124,7 @@ function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt
 function fmtDate(d){try{return new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});}catch(e){return '';}}
 function qparams(){const p=new URLSearchParams(location.search);return {id:p.get('id'),slug:p.get('n')};}
 window.gtsSearch=(e)=>{e.preventDefault();const v=e.target.querySelector('input').value.trim();location.href='./index.html'+(v?('?q='+encodeURIComponent(v)):'');return false;};
+window.gtsBack=()=>{ if(history.length>1){history.back();return false;} return true; };
 
 function setMeta(n,shareUrl){
   const desc=(n.body||n.title||'').slice(0,160);
@@ -157,11 +157,11 @@ async function render(){
   if(!requireConfig())return;
   const {id,slug}=qparams();
   const art=document.getElementById('article');
-  if(!id&&!slug){art.innerHTML='<div class="state">No article specified. <a href="./news.html">Browse all news →</a></div>';return;}
+  if(!id&&!slug){art.innerHTML='<div class="state">No article specified. <a href="./index.html">Browse all news →</a></div>';return;}
   let qy=supabase.from('public_news').select('*');
   qy = slug ? qy.eq('slug',slug) : qy.eq('id',id);
   const {data:n,error}=await qy.maybeSingle();
-  if(error||!n){art.innerHTML='<div class="state">This article isn\'t available. <a href="./news.html">Browse all news →</a></div>';return;}
+  if(error||!n){art.innerHTML='<div class="state">This article isn\'t available. <a href="./index.html">Browse all news →</a></div>';return;}
   const shareUrl = n.slug ? (location.origin+'/article?n='+n.slug) : location.href;
   setMeta(n,shareUrl);
   const isOp=n.source==='operator';

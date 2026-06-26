@@ -166,7 +166,6 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
     <div class="act">
       <a href="#organisers">For organisers</a>
       <a href="#apply">Get sponsors</a>
-      <a class="login" href="./news.html">Log in / Sign up</a>
       <a class="post" href="./news.html">＋ Post your news</a>
     </div>
   </div>
@@ -296,7 +295,15 @@ async function load(){
   if(error){document.getElementById('feed').innerHTML='<div class="empty">Could not load news: '+error.message+'</div>';return;}
   ALL=data||[];
   const p=new URLSearchParams(location.search);
-  const q=p.get('q'), c=p.get('cat');
+  let q=p.get('q'), c=p.get('cat'), restoreY=0;
+  if(!q&&!c){ // returning from an article -> restore the exact list & scroll
+    try{
+      const raw=sessionStorage.getItem('gtsFeed');
+      const nav=performance.getEntriesByType('navigation')[0];
+      const back=(nav&&nav.type==='back_forward')|| /\/article|\/s\//.test(document.referrer);
+      if(raw&&back){const sv=JSON.parse(raw); if(sv){ if(sv.q)q=sv.q; else if(sv.cat&&sv.cat!=='all')c=sv.cat; PAGE=sv.page||0; restoreY=sv.y||0; }}
+    }catch(e){}
+  }
   if(q){Q=q.toLowerCase();const qi=document.getElementById('q');if(qi)qi.value=q;
     document.getElementById('feedhead').textContent='Search results: “'+q+'”';
     document.getElementById('feedcount').innerHTML='<a href="./index.html" style="color:var(--green);font-weight:700;text-decoration:none">✕ Clear search</a>';}
@@ -304,7 +311,10 @@ async function load(){
     document.querySelectorAll('#cats button').forEach(b=>b.classList.toggle('on',b.dataset.f===c));
     document.getElementById('feedhead').textContent=TYPE_LABEL[c]+' sponsor news';}
   renderRank(); render();
+  if(restoreY) setTimeout(()=>window.scrollTo(0,restoreY),60);
+  ['feed','rank'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',e=>{if(e.target.closest('a'))saveFeedState();});});
 }
+function saveFeedState(){try{sessionStorage.setItem('gtsFeed',JSON.stringify({cat:CAT,page:PAGE,q:Q,y:window.scrollY}));}catch(e){}}
 function filtered(){
   return ALL.filter(n=>(CAT==='all'||cat(n)===CAT)&&(!Q||((n.title+' '+n.author_name+' '+(n.body||'')).toLowerCase().includes(Q))));
 }
