@@ -168,11 +168,11 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
     </div>
   </div>
   <div class="catbar"><div class="inner" id="cats">
-    <button class="on" data-f="all" onclick="setCat('all')">All <span class="cnt" id="cnt-all"></span></button>
-    <button data-f="tournament" onclick="setCat('tournament')">Tournaments <span class="cnt" id="cnt-tournament"></span></button>
-    <button data-f="club" onclick="setCat('club')">Clubs <span class="cnt" id="cnt-club"></span></button>
-    <button data-f="player" onclick="setCat('player')">Players <span class="cnt" id="cnt-player"></span></button>
-    <button data-f="other" onclick="setCat('other')">Other <span class="cnt" id="cnt-other"></span></button>
+    <button class="on" data-f="all" onclick="setCat('all')">All</button>
+    <button data-f="tournament" onclick="setCat('tournament')">Tournaments</button>
+    <button data-f="club" onclick="setCat('club')">Clubs</button>
+    <button data-f="player" onclick="setCat('player')">Players</button>
+    <button data-f="other" onclick="setCat('other')">Other</button>
   </div></div>
 </header>
 
@@ -298,13 +298,7 @@ async function load(){
   if(c&&['tournament','club','player','other'].includes(c)){CAT=c;
     document.querySelectorAll('#cats button').forEach(b=>b.classList.toggle('on',b.dataset.f===c));
     document.getElementById('feedhead').textContent=TYPE_LABEL[c]+' sponsor news';}
-  renderRank(); updateTabCounts(); render();
-}
-function updateTabCounts(){
-  const counts={all:ALL.length};
-  ALL.forEach(n=>{const c=cat(n);counts[c]=(counts[c]||0)+1;});
-  ['all','tournament','club','player','other'].forEach(c=>{
-    const el=document.getElementById('cnt-'+c); if(el) el.textContent=counts[c]||0;});
+  renderRank(); render();
 }
 function filtered(){
   return ALL.filter(n=>(CAT==='all'||cat(n)===CAT)&&(!Q||((n.title+' '+n.author_name+' '+(n.body||'')).toLowerCase().includes(Q))));
@@ -314,7 +308,6 @@ function render(){
   const total=list.length, pages=Math.max(1,Math.ceil(total/PER));
   if(PAGE>=pages) PAGE=0;
   const slice=list.slice(PAGE*PER,PAGE*PER+PER);
-  document.getElementById('feedcount').textContent=total+(total===1?' story':' stories');
   document.getElementById('feed').innerHTML = slice.length? slice.map(n=>{
     const isOp=n.source==='operator';
     const brand=n.sponsor_name||'';

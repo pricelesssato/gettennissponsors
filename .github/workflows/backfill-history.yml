@@ -1,0 +1,30 @@
+name: backfill-history
+
+# One-off bulk historical backfill (~3000 tennis sponsorship items).
+# Run from the Actions tab. Long-running (sweeps GDELT month-by-month + Claude).
+on:
+  workflow_dispatch:
+    inputs:
+      max_items:
+        description: "Max new items to insert"
+        default: "3000"
+      start_year:
+        description: "Earliest year to sweep"
+        default: "2021"
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r news-pipeline/requirements.txt
+      - env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          MAX_ITEMS: ${{ github.event.inputs.max_items }}
+          START_YEAR: ${{ github.event.inputs.start_year }}
+        run: python news-pipeline/backfill_history.py
