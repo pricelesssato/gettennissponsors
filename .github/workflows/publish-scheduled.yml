@@ -1,0 +1,20 @@
+name: publish-scheduled
+
+# Hourly: publish any scheduled posts whose time (UTC) has arrived.
+on:
+  schedule:
+    - cron: "5 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Flip due scheduled posts to published
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SR: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+        run: |
+          curl -fsS -X POST "$SUPABASE_URL/rest/v1/rpc/publish_due" \
+            -H "apikey: $SR" -H "Authorization: Bearer $SR" \
+            -H "Content-Type: application/json" -d '{}'

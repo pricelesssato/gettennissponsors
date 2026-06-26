@@ -79,6 +79,7 @@ a{color:inherit;text-decoration:none;}
 .rel:hover h3{color:var(--green);}
 .rel .meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);flex-wrap:wrap;}
 .rel .meta .au{font-weight:700;color:#2c3a31;}
+.rel .meta .av-mini{width:20px;height:20px;border-radius:50%;object-fit:cover;border:1px solid var(--line-2);vertical-align:middle;margin-right:2px;}
 .rel .meta .sp{font-family:"Roboto Mono";font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--green);background:#e6f0ea;border:1px solid #cfe3d6;border-radius:5px;padding:1px 6px;}
 mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%);color:inherit;font-weight:800;padding:0 1px;border-radius:2px;}
 .rel .ex{font-size:12.5px;color:#566;line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -321,7 +322,7 @@ function render(){
       <div class="body">
         <div class="toprow"><span class="badge ${isOp?'operator':'self'}">${isOp?'⭐ Curated':'🎾 News'}</span><span class="cat">${TYPE_LABEL[cat(n)]||''}</span></div>
         <h3>${markBrand(n.title, brand)}</h3>
-        <div class="meta"><span class="au">${esc(n.author_name)}</span>${brand?` · <span class="sp">Sponsor</span> ${esc(brand)}`:''}${n.country?` · <span class="flag">${esc(n.country)}</span>`:''} · <span>${relTime(n.published_at)}</span></div>
+        <div class="meta">${n.author_avatar?`<img class="av-mini" src="${esc(n.author_avatar)}"> `:''}<span class="au">${esc(n.author_name)}</span>${brand?` · <span class="sp">Sponsor</span> ${esc(brand)}`:''}${n.country?` · <span class="flag">${esc(n.country)}</span>`:''} · <span>${relTime(n.published_at)}</span></div>
         ${n.body?`<div class="ex">${markBrand(n.body, brand)}</div>`:''}
       </div></a>`;}).join('') : '<div class="empty">No stories match. Try another category or search.</div>';
   renderPager(total,pages);

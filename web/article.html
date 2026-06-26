@@ -176,7 +176,7 @@ async function render(){
     </div>
     <h1 class="title">${markBrand(n.title, n.sponsor_name||'')}</h1>
     <div class="authorline">
-      <div class="av${isOp?' icon':''}">${isOp?'<img src="./assets/icon.png" alt="GetTennisSponsors">':esc(initial)}</div>
+      <div class="av${(isOp||n.author_avatar)?' icon':''}">${isOp?'<img src="./assets/icon.png" alt="GetTennisSponsors">':(n.author_avatar?`<img src="${esc(n.author_avatar)}" alt="">`:esc(initial))}</div>
       <div><div class="nm">${esc(n.author_name)}</div><div class="ro">${isOp?'Curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this news'}</div></div>
     </div>
     <div class="body">${(n.body||'').split(/\n+/).filter(Boolean).map(p=>`<p>${markBrand(p, n.sponsor_name||'')}</p>`).join('')||'<p class="state">No details provided.</p>'}</div>
