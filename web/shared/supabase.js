@@ -13,15 +13,32 @@ export const supabase = CONFIGURED
   : null;
 
 // ISO2 -> English country name (display only; data stores the code).
-export const COUNTRY = {
-  JP: "Japan", SG: "Singapore", TH: "Thailand", GB: "United Kingdom",
-  US: "United States", AU: "Australia", FR: "France", IT: "Italy",
-  PL: "Poland", HK: "Hong Kong", ES: "Spain", DE: "Germany", CH: "Switzerland",
-  CN: "China", IN: "India", AE: "United Arab Emirates", SA: "Saudi Arabia",
-  SE: "Sweden", KW: "Kuwait", RU: "Russia", RS: "Serbia",
-  CA: "Canada", BY: "Belarus",
-};
+// Europe-first, then global. Used for the country <select> and for display.
+export const COUNTRIES = [
+  { c: "GB", n: "United Kingdom" }, { c: "FR", n: "France" }, { c: "ES", n: "Spain" },
+  { c: "IT", n: "Italy" }, { c: "DE", n: "Germany" }, { c: "NL", n: "Netherlands" },
+  { c: "BE", n: "Belgium" }, { c: "AT", n: "Austria" }, { c: "CH", n: "Switzerland" },
+  { c: "PT", n: "Portugal" }, { c: "IE", n: "Ireland" }, { c: "SE", n: "Sweden" },
+  { c: "NO", n: "Norway" }, { c: "DK", n: "Denmark" }, { c: "FI", n: "Finland" },
+  { c: "PL", n: "Poland" }, { c: "CZ", n: "Czechia" }, { c: "SK", n: "Slovakia" },
+  { c: "HU", n: "Hungary" }, { c: "RO", n: "Romania" }, { c: "BG", n: "Bulgaria" },
+  { c: "HR", n: "Croatia" }, { c: "RS", n: "Serbia" }, { c: "GR", n: "Greece" },
+  { c: "UA", n: "Ukraine" }, { c: "RU", n: "Russia" }, { c: "BY", n: "Belarus" },
+  { c: "TR", n: "Türkiye" },
+  { c: "US", n: "United States" }, { c: "CA", n: "Canada" }, { c: "BR", n: "Brazil" },
+  { c: "AR", n: "Argentina" }, { c: "MX", n: "Mexico" },
+  { c: "AU", n: "Australia" }, { c: "NZ", n: "New Zealand" },
+  { c: "JP", n: "Japan" }, { c: "KR", n: "South Korea" }, { c: "CN", n: "China" },
+  { c: "HK", n: "Hong Kong" }, { c: "IN", n: "India" }, { c: "SG", n: "Singapore" },
+  { c: "TH", n: "Thailand" }, { c: "AE", n: "United Arab Emirates" },
+  { c: "SA", n: "Saudi Arabia" }, { c: "KW", n: "Kuwait" }, { c: "ZA", n: "South Africa" },
+];
+export const COUNTRY = Object.fromEntries(COUNTRIES.map(x => [x.c, x.n]));
 export const countryName = (c) => COUNTRY[c] || c || "";
+export function countryOptions(sel) {
+  return '<option value="">— Select country —</option>' +
+    COUNTRIES.map(x => `<option value="${x.c}"${x.c === (sel || "") ? " selected" : ""}>${x.n}</option>`).join("");
+}
 
 const _esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 

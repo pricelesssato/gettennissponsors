@@ -78,7 +78,14 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 .pbtn:disabled{opacity:.6;cursor:default;}
 .who{font-size:12.5px;color:var(--muted);}
 .avwrap{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
-.avbig{width:74px;height:74px;border-radius:50%;object-fit:cover;background:#fff;border:1px solid var(--line-2);flex:0 0 auto;}
+.avbig{width:74px;height:74px;border-radius:50%;background:#eef0ed center/cover no-repeat;border:1px dashed var(--line-2);flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#9aa39c;font-size:30px;font-weight:300;cursor:default;}
+.bioprev{margin-top:8px;}
+.bplabel{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+.bpcard{display:flex;gap:11px;align-items:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;}
+.bpav{width:38px;height:38px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;overflow:hidden;flex:0 0 auto;}
+.bpav img{width:100%;height:100%;object-fit:cover;}
+.bpn{font-weight:800;font-size:14px;}
+.bpb{font-size:12.5px;color:#566;line-height:1.6;margin-top:2px;}
 .imgprev{width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid var(--line-2);margin-top:8px;display:none;}
 .hint{font-size:11.5px;color:var(--muted);margin-top:5px;}
 .benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:10px;}
@@ -157,7 +164,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 
 <script src="./shared/config.js"></script>
 <script type="module">
-import { supabase, requireConfig, countryName, markBrand } from "./shared/supabase.js";
+import { supabase, requireConfig, countryName, markBrand, countryOptions } from "./shared/supabase.js";
 window.gtsSearch=(e)=>{e.preventDefault();const v=e.target.querySelector('input').value.trim();location.href='./index.html'+(v?('?q='+encodeURIComponent(v)):'');return false;};
 const TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'local';
 const PEXELS=(window.GTS_CONFIG||{}).PEXELS_API_KEY||'';
@@ -241,44 +248,45 @@ function renderStudio(){
     <h2>Your profile</h2>
     <div class="fl">Your name and mark appear on your posts. Saved once, reused everywhere.</div>
     <div class="avwrap">
-      <img class="avbig" id="pf-av" src="${esc(p.avatar_url||'./assets/icon.png')}" alt="">
+      <div class="avbig" id="pf-av" style="${p.avatar_url?`background-image:url('${esc(p.avatar_url)}')`:''}">${p.avatar_url?'':'<span>＋</span>'}</div>
       <div>
         <label class="filebtn">Upload mark / photo<input type="file" id="pf-avfile" accept="image/*" hidden></label>
-        <div class="hint">Square image works best (shown as a circle).</div>
+        <div class="hint">Square image works best (shown as a circle). Optional.</div>
       </div>
     </div>
     <div class="row2">
-      <div class="field"><label>Display name</label><input id="pf-name" value="${esc(p.display_name||'')}" placeholder="e.g. Yuki Nakamura / Maebashi Tennis Club"></div>
+      <div class="field"><label>Display name</label><input id="pf-name" value="${esc(p.display_name||'')}" placeholder="e.g. Lucas Moreau / Madrid Tennis Club"></div>
       <div class="field"><label>You are a…</label><select id="pf-type">
         <option value="player">Player</option><option value="club">Club</option><option value="tournament">Tournament</option><option value="other">Other</option></select></div>
     </div>
     <div class="row2">
-      <div class="field"><label>Country (ISO, optional)</label><input id="pf-country" maxlength="2" value="${esc(p.country||'')}" placeholder="JP"></div>
+      <div class="field"><label>Country</label><select id="pf-country">${countryOptions(p.country)}</select></div>
       <div class="field"><label>&nbsp;</label><button class="pbtn" id="pf-save" style="width:100%">Save profile</button></div>
     </div>
-    <div class="field"><label>Short bio (optional)</label><textarea id="pf-bio" placeholder="A line about you / your club / your event">${esc(p.bio||'')}</textarea></div>
+    <div class="field"><label>Short bio (optional)</label><textarea id="pf-bio" placeholder="A line about you / your club / your event — e.g. ‘ITF junior from Lyon, world top-500’">${esc(p.bio||'')}</textarea></div>
+    <div class="bioprev" id="bioprev"></div>
   </div>
 
   <!-- post editor -->
   <div class="panel">
     <h2 id="form-title">Post news</h2>
     <div class="fl">Add a photo, set visibility, publish now or schedule. You can edit, unpublish or delete any time.</div>
-    <div class="field"><label>Headline</label><input id="n-title" placeholder="e.g. Maebashi Tennis Club secures apparel sponsor"></div>
+    <div class="field"><label>Headline</label><input id="n-title" placeholder="e.g. Madrid Tennis Club secures apparel sponsor"></div>
     <div class="row2">
-      <div class="field"><label>Posting as (shown)</label><input id="n-author" placeholder="name shown on the post"></div>
       <div class="field"><label>Sponsor name (highlighted)</label><input id="n-sponsor" placeholder="e.g. ASICS"></div>
-    </div>
-    <div class="row2">
       <div class="field"><label>Category</label><select id="n-atype">
         <option value="tournament">Tournament</option><option value="club">Club</option><option value="player">Player</option><option value="other">Other</option></select></div>
-      <div class="field"><label>Country (ISO, optional)</label><input id="n-country" maxlength="2" placeholder="JP"></div>
     </div>
-    <div class="field"><label>Source link (optional)</label><input id="n-link" placeholder="https://…"></div>
+    <div class="row2">
+      <div class="field"><label>Country</label><select id="n-country">${countryOptions('')}</select></div>
+      <div class="field"><label>Link URL (optional)</label><input id="n-link" placeholder="https://…"></div>
+    </div>
     <div class="field"><label>Image (optional)</label><br>
       <label class="filebtn">Upload image<input type="file" id="n-imgfile" accept="image/*" hidden></label>
       <button type="button" class="filebtn" id="n-stockbtn" style="margin-left:6px">Choose from stock</button>
+      <div class="hint">Recommended: landscape, about 1200×630px (JPG/PNG).</div>
       <img class="imgprev" id="n-imgprev" alt=""></div>
-    <div class="field"><label>Story</label><textarea id="n-body" placeholder="What happened…"></textarea></div>
+    <div class="field"><label>News</label><textarea id="n-body" placeholder="What happened…"></textarea></div>
     <div class="row2">
       <div class="field"><label>Visibility</label><select id="n-vis" onchange="onVis()">
         <option value="now">Publish now</option>
@@ -297,18 +305,32 @@ function renderStudio(){
   <div class="panel"><h2>Your posts</h2><div id="mine"><div class="who">Loading…</div></div></div>`;
 
   // defaults from profile
-  document.getElementById('n-author').value=p.display_name||'';
   if(p.member_type) document.getElementById('n-atype').value=p.member_type;
   if(p.member_type) document.getElementById('pf-type').value=p.member_type;
   if(p.country) document.getElementById('n-country').value=p.country;
 
   document.getElementById('pf-avfile').onchange=onAvatar;
   document.getElementById('pf-save').onclick=saveProfile;
+  document.getElementById('pf-bio').addEventListener('input',renderBioPreview);
+  document.getElementById('pf-name').addEventListener('input',renderBioPreview);
+  renderBioPreview();
   document.getElementById('n-imgfile').onchange=onImage;
   const sb=document.getElementById('n-stockbtn'); if(sb) sb.onclick=openStock;
   document.getElementById('n-btn').onclick=savePost;
   document.getElementById('n-cancel').onclick=()=>{EDIT_ID=null;clearForm();};
   loadMine();
+}
+function renderBioPreview(){
+  const box=document.getElementById('bioprev'); if(!box)return;
+  const name=(document.getElementById('pf-name').value||PROFILE?.display_name||'Your name').trim()||'Your name';
+  const bio=(document.getElementById('pf-bio').value||'').trim();
+  const av=PROFILE?.avatar_url;
+  const initial=name.charAt(0).toUpperCase();
+  box.innerHTML=`<div class="bplabel">Preview — how it appears on your news article:</div>
+    <div class="bpcard">
+      <div class="bpav">${av?`<img src="${esc(av)}">`:esc(initial)}</div>
+      <div><div class="bpn">${esc(name)}</div>${bio?`<div class="bpb">${esc(bio)}</div>`:`<div class="bpb" style="opacity:.5">Your bio will show here</div>`}</div>
+    </div>`;
 }
 window.onVis=()=>{const v=document.getElementById('n-vis').value;
   document.getElementById('n-when-wrap').style.display=v==='schedule'?'block':'none';
@@ -339,8 +361,9 @@ async function onAvatar(e){
   const {error}=await supabase.storage.from('avatars').upload(path,f,{upsert:true,contentType:f.type});
   if(error){toast('Upload failed: '+error.message,true);return;}
   const {data}=supabase.storage.from('avatars').getPublicUrl(path);
-  document.getElementById('pf-av').src=data.publicUrl;
   if(!PROFILE)PROFILE={id:SESSION.user.id}; PROFILE.avatar_url=data.publicUrl;
+  const av=document.getElementById('pf-av'); av.style.backgroundImage=`url('${data.publicUrl}')`; av.innerHTML='';
+  renderBioPreview();
   toast('Mark uploaded — remember to Save profile');
 }
 async function onImage(e){
@@ -387,23 +410,21 @@ async function saveProfile(){
   const {error}=await supabase.from('member_profiles').upsert(payload);
   btn.disabled=false;btn.textContent='Save profile';
   if(error){toast('Error: '+error.message,true);return;}
-  PROFILE=payload; toast('Profile saved');
-  // reflect into the post author field if empty
-  const a=document.getElementById('n-author'); if(a && !a.value) a.value=payload.display_name||'';
+  PROFILE=payload; renderBioPreview(); toast('Profile saved');
 }
 
 /* ---- post create / edit ---- */
-function clearForm(){['n-title','n-sponsor','n-country','n-link','n-body'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+function clearForm(){['n-title','n-sponsor','n-link','n-body'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const cc=document.getElementById('n-country'); if(cc) cc.value=PROFILE?.country||'';
   NEWS_IMG=null; const pv=document.getElementById('n-imgprev'); if(pv){pv.style.display='none';pv.src='';}
-  const a=document.getElementById('n-author'); if(a) a.value=PROFILE?.display_name||'';
   document.getElementById('n-vis').value='now'; onVis();
   document.getElementById('form-title').textContent='Post news';
   document.getElementById('n-cancel').style.display='none';}
 async function savePost(){
   const title=document.getElementById('n-title').value.trim();
-  const author=document.getElementById('n-author').value.trim();
+  const author=(PROFILE?.display_name||'').trim();
   if(!title){toast('Headline required',true);return;}
-  if(!author){toast('Posting name required',true);return;}
+  if(!author){toast('Set your profile display name first (top of page)',true);return;}
   const vis=document.getElementById('n-vis').value;
   let status='published', published_at=new Date().toISOString();
   if(vis==='draft'){status='draft';published_at=null;}
@@ -411,10 +432,10 @@ async function savePost(){
     if(!v){toast('Pick a publish date & time',true);return;}
     status='scheduled';published_at=new Date(v).toISOString();}   // local -> UTC
   const payload={title, body:document.getElementById('n-body').value,
-    author_name:author, author_avatar:PROFILE?.avatar_url||null,
+    author_name:author, author_avatar:PROFILE?.avatar_url||null, author_bio:PROFILE?.bio||null,
     author_type:document.getElementById('n-atype').value,
     sponsor_name:document.getElementById('n-sponsor').value.trim()||null,
-    country:document.getElementById('n-country').value.trim().toUpperCase()||null,
+    country:document.getElementById('n-country').value||null,
     link_url:document.getElementById('n-link').value.trim()||null,
     status, published_at};
   if(NEWS_IMG) payload.image_url=NEWS_IMG;
@@ -464,7 +485,6 @@ async function setStatus(id,status,published_at){
 }
 function startEdit(n){EDIT_ID=n.id;
   document.getElementById('n-title').value=n.title||'';
-  document.getElementById('n-author').value=n.author_name||'';
   document.getElementById('n-sponsor').value=n.sponsor_name||'';
   document.getElementById('n-atype').value=n.author_type||'other';
   document.getElementById('n-country').value=n.country||'';

@@ -64,6 +64,7 @@ h1.title{font-size:30px;font-weight:900;line-height:1.2;letter-spacing:-.01em;ma
 .authorline .av.icon img{width:100%;height:100%;object-fit:contain;}
 .authorline .nm{font-weight:800;font-size:14px;}
 .authorline .ro{font-size:12px;color:var(--muted);}
+.authorline .abio{font-size:12.5px;color:#566;line-height:1.55;margin-top:4px;}
 .sptag{font-family:"Roboto Mono";font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--green);background:#e6f0ea;border:1px solid #cfe3d6;border-radius:5px;padding:1px 6px;vertical-align:middle;}
 mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);color:inherit;font-weight:800;padding:0 1px;border-radius:2px;}
 .body{font-size:16px;line-height:1.85;color:#1f2c25;}
@@ -186,7 +187,7 @@ async function render(){
     <h1 class="title">${markBrand(n.title, n.sponsor_name||'')}</h1>
     <div class="authorline">
       <div class="av${(isOp||n.author_avatar)?' icon':''}">${isOp?'<img src="./assets/icon.png" alt="GetTennisSponsors">':(n.author_avatar?`<img src="${esc(n.author_avatar)}" alt="">`:esc(initial))}</div>
-      <div><div class="nm">${esc(n.author_name)}</div><div class="ro">${isOp?'Curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this news'}</div></div>
+      <div><div class="nm">${esc(n.author_name)}</div><div class="ro">${isOp?'Curated by GetTennisSponsors':(TYPELABEL[n.author_type]||'Member')+' · posted this news'}</div>${(!isOp&&n.author_bio)?`<div class="abio">${esc(n.author_bio)}</div>`:''}</div>
     </div>
     <div class="body">${(n.body||'').split(/\n+/).filter(Boolean).map(p=>`<p>${markBrand(p, n.sponsor_name||'')}</p>`).join('')||'<p class="state">No details provided.</p>'}</div>
     ${n.link_url?`<div class="srcbox">Source: <a href="${esc(n.link_url)}" target="_blank" rel="noopener">View original article ↗</a></div>`:''}
