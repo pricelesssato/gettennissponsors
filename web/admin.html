@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--green:#0F4D34;--green-2:#15573C;--green-3:#0A3A27;--accent:#C8DC2B;--ink:#16241D;--muted:#6E756F;
-  --line:#E4E8E3;--line-2:#D2D8D0;--bg:#F4F6F3;--surface:#FFFFFF;--red:#B23A48;--blue:#2563A8;
+  --line:#E4E8E3;--line-2:#D2D8D0;--bg:#F4F6F3;--surface:#FFFFFF;--red:#B23A48;--blue:#2563A8;--amber:#B5790E;
   --radius:12px;--shadow:0 1px 2px rgba(20,40,30,.05),0 8px 24px rgba(20,40,30,.06);}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);}
@@ -21,41 +21,66 @@ a{color:var(--blue);}
 .hdr img{height:46px;}
 .hdr .sys{font-family:"Roboto Mono";font-size:12px;color:var(--muted);font-weight:700;}
 .hdr .who{margin-left:auto;font-size:12.5px;color:var(--muted);}
-.wrap{max-width:1100px;margin:0 auto;padding:22px 20px 70px;}
-.h1{font-size:22px;font-weight:900;margin-bottom:14px;}
+.wrap{max-width:1120px;margin:0 auto;padding:18px 20px 70px;}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:18px;align-items:center;}
+.tabs button.tab{padding:11px 16px;font-size:14px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tabs button.tab.on{color:var(--green);border-bottom-color:var(--green);}
+.h1{font-size:20px;font-weight:900;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.h1 .sub{font-size:12.5px;font-weight:400;color:var(--muted);}
 .tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
 .tools input,.tools select{border:1px solid var(--line-2);border-radius:9px;padding:9px 12px;font-family:inherit;font-size:13.5px;background:#fff;}
-.tools input.q{flex:1;min-width:220px;}
+.tools input.q{flex:1;min-width:200px;}
 .btn{background:var(--green);color:#fff;font-weight:700;font-size:13px;padding:9px 14px;border-radius:9px;}
 .btn.ghost{background:#fff;color:var(--green);border:1px solid var(--line-2);}
 .btn.red{background:var(--red);color:#fff;}
 .btn.sm{padding:6px 10px;font-size:12px;}
-.row{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:10px;margin-bottom:8px;}
+.row{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:11px 12px;margin-bottom:8px;}
 .row .th{width:96px;height:62px;border-radius:8px;object-fit:cover;flex:0 0 auto;background:var(--bg);border:1px solid var(--line-2);}
 .row .meta{flex:1;min-width:0;}
 .row .tt{font-weight:700;font-size:14px;line-height:1.35;}
-.row .mm{font-size:11.5px;color:var(--muted);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-.badge{font-family:"Roboto Mono";font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:5px;}
-.b-published{color:var(--green);background:#e6f0ea;} .b-hidden{color:var(--red);background:#f7e9eb;}
-.b-draft{color:var(--muted);background:#eef0ed;} .b-scheduled{color:var(--blue);background:#e6eef7;}
-.b-operator{color:var(--blue);background:#e6eef7;} .b-self{color:var(--green);background:#e6f0ea;}
+.row .mm{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
 .row .acts{display:flex;gap:6px;flex:0 0 auto;}
+.badge{font-family:"Roboto Mono";font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:5px;white-space:nowrap;}
+.b-published,.b-live,.b-contracted{color:var(--green);background:#e6f0ea;}
+.b-hidden,.b-lost{color:var(--red);background:#f7e9eb;}
+.b-draft,.b-prospect{color:var(--muted);background:#eef0ed;}
+.b-scheduled,.b-approach,.b-renewal,.b-operator{color:var(--blue);background:#e6eef7;}
+.b-negotiating{color:var(--amber);background:#f6efdd;}
+.b-self,.b-form,.b-inbound{color:var(--green);background:#e6f0ea;}
+.b-agent{color:var(--blue);background:#e6eef7;} .b-direct{color:var(--muted);background:#eef0ed;}
+.b-need{color:#5b3aa6;background:#ede8fa;}
 .pager{display:flex;justify-content:center;gap:14px;align-items:center;margin-top:16px;}
 .pager .pinfo{font-family:"Roboto Mono";font-size:12px;color:var(--muted);}
 .note{color:var(--muted);font-size:13px;padding:30px;text-align:center;}
+/* pipeline board */
+.board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(168px,1fr);gap:10px;overflow-x:auto;padding-bottom:8px;}
+.col{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;min-width:168px;}
+.col .ch{font-family:"Roboto Mono";font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:flex;justify-content:space-between;padding:2px 4px 8px;}
+.card{background:var(--bg);border:1px solid var(--line-2);border-radius:8px;padding:9px;margin-bottom:7px;cursor:pointer;transition:.12s;}
+.card:hover{border-color:var(--green);}
+.card .cn{font-weight:700;font-size:12.5px;line-height:1.3;}
+.card .cs{font-size:11px;color:var(--muted);margin-top:3px;}
+.card .cmt{font-size:11px;color:var(--green);font-weight:700;margin-top:4px;font-family:"Roboto Mono";}
+.card .due{font-size:10.5px;color:var(--red);margin-top:3px;}
 /* drawer */
 .scrim{position:fixed;inset:0;background:rgba(20,30,25,.4);z-index:80;opacity:0;pointer-events:none;transition:.2s;}
 .scrim.on{opacity:1;pointer-events:auto;}
-.drawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,96vw);background:#fff;z-index:90;transform:translateX(102%);transition:.24s;overflow-y:auto;box-shadow:-8px 0 30px rgba(20,40,30,.16);}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(580px,96vw);background:#fff;z-index:90;transform:translateX(102%);transition:.24s;overflow-y:auto;box-shadow:-8px 0 30px rgba(20,40,30,.16);}
 .drawer.on{transform:none;}
-.dh{position:sticky;top:0;background:#fff;padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+.dh{position:sticky;top:0;background:#fff;padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;z-index:2;}
 .dh h3{font-size:16px;font-weight:900;}
-.db{padding:18px 20px 50px;}
+.db{padding:18px 20px 60px;}
+.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:18px 0 8px;border-top:1px solid var(--line);padding-top:14px;}
+.sec:first-child{border-top:none;padding-top:0;margin-top:0;}
 .field{margin-bottom:12px;}
 .field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;}
 .field input,.field select,.field textarea{width:100%;border:1px solid var(--line-2);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:13.5px;background:var(--bg);}
-.field textarea{min-height:120px;resize:vertical;}
+.field textarea{min-height:90px;resize:vertical;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.econ{background:var(--bg);border:1px solid var(--line-2);border-radius:9px;padding:10px 12px;font-size:12.5px;}
+.econ div{display:flex;justify-content:space-between;padding:2px 0;}
+.econ b{font-family:"Roboto Mono";}
 .imgbox{border:1px solid var(--line-2);border-radius:10px;padding:12px;background:var(--bg);}
 .imgbox img{width:100%;max-height:180px;object-fit:cover;border-radius:8px;display:none;}
 .imgbtns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 6px;}
@@ -64,6 +89,11 @@ a{color:var(--blue);}
 .stockgrid img{width:100%;height:74px;object-fit:cover;border-radius:7px;cursor:pointer;border:2px solid transparent;}
 .stockgrid img:hover{border-color:var(--green);}
 .pbtn{background:var(--green);color:#fff;font-weight:700;font-size:14px;padding:12px;border-radius:10px;width:100%;}
+.actlog{margin-top:6px;}
+.actitem{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12.5px;}
+.actitem .am{font-size:10.5px;color:var(--muted);display:flex;gap:8px;margin-bottom:2px;align-items:center;}
+.minirow{display:flex;gap:8px;align-items:center;justify-content:space-between;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:6px;}
+.minirow .mn{font-size:12.5px;font-weight:700;}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:130;background:var(--ink);color:#fff;font-size:13px;padding:12px 20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:.25s;}
 .toast.on{opacity:1;transform:translateX(-50%);}
 .toast.err{background:var(--red);}
@@ -75,27 +105,40 @@ a{color:var(--blue);}
 <body>
 <div class="hdr">
   <a href="./index.html"><img src="./assets/logo.png" alt="GetTennisSponsors"></a>
-  <span class="sys">ADMIN</span>
+  <span class="sys">SPONSOR OS</span>
   <span class="who" id="who"></span>
 </div>
 <div class="wrap" id="app"><div class="note">Loading…</div></div>
 
 <div class="scrim" id="scrim" onclick="closeDrawer()"></div>
-<aside class="drawer" id="drawer"><div class="dh"><h3 id="d-title">Edit post</h3><button class="btn ghost sm" onclick="closeDrawer()">Close</button></div><div class="db" id="d-body"></div></aside>
+<aside class="drawer" id="drawer"><div class="dh"><h3 id="d-title">Edit</h3><button class="btn ghost sm" onclick="closeDrawer()">Close</button></div><div class="db" id="d-body"></div></aside>
 <div class="toast" id="toast"></div>
 
 <script src="./shared/config.js"></script>
 <script type="module">
-import { supabase, requireConfig, countryName } from "./shared/supabase.js";
+import { supabase, requireConfig, countryName, countryOptions, money } from "./shared/supabase.js";
 const PEXELS=(window.GTS_CONFIG||{}).PEXELS_API_KEY||'';
 const TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'local';
 const PER=25;
-let SESSION=null, IS_ADMIN=false, PAGE=0, Q='', STATUS='all', EDIT=null, IMG=null;
+const NEED=[['A','A · Sales / leads'],['B','B · Brand / trust'],['C','C · People / recruiting'],['D','D · Milestone']];
+const SOURCE=['form','agent','direct','inbound'];
+const STAGES=['prospect','approach','negotiating','contracted','live','renewal','lost'];
+const STAGE_LABEL={prospect:'Prospect',approach:'Approach',negotiating:'Negotiating',contracted:'Contracted',live:'Live',renewal:'Renewal',lost:'Lost'};
+const ACT=['memo','mail','call','visit','form'];
+let SESSION=null, IS_ADMIN=false, TAB='companies';
+let N_PAGE=0, N_Q='', N_STATUS='all', N_EDIT=null, IMG=null;       // news
+let C_Q='', C_NEED='all', C_SRC='all', C_EDIT=null;                 // companies
+let D_STAGE='all', D_EDIT=null;                                     // deals
+let LIST_COMPANIES=[], LIST_SPONSORABLES=[];                        // caches for selects
 let toTimer;
 function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast on'+(err?' err':'');clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2600);}
 function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fdt(d){try{return new Date(d).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});}catch(e){return '';}}
+function fd(d){try{return new Date(d).toLocaleDateString(undefined,{dateStyle:'medium'});}catch(e){return '';}}
+function opts(arr,sel){return arr.map(v=>{const[val,lab]=Array.isArray(v)?v:[v,v];return `<option value="${esc(val)}"${val===sel?' selected':''}>${esc(lab)}</option>`;}).join('');}
+const content=()=>document.getElementById('content');
 
+/* ===================== AUTH ===================== */
 let STARTED=false;
 async function proceed(){
   if(STARTED)return; STARTED=true;
@@ -103,7 +146,7 @@ async function proceed(){
   const {data:prof}=await supabase.from('profiles').select('role').eq('id',SESSION.user.id).maybeSingle();
   IS_ADMIN = prof && (prof.role==='admin'||prof.role==='staff');
   if(!IS_ADMIN){ document.getElementById('app').innerHTML='<div class="gate"><h2>Not authorized</h2><p>This account is not an admin. <button class="btn ghost sm" id="so">Sign out</button></p></div>'; document.getElementById('so').onclick=signOut; return; }
-  renderApp(); load();
+  renderShell(); switchTab(TAB);
 }
 async function init(){
   if(!requireConfig())return;
@@ -127,36 +170,369 @@ function renderGate(){
 }
 async function signOut(){await supabase.auth.signOut();}
 
-function renderApp(){
+/* ===================== SHELL / TABS ===================== */
+function renderShell(){
   document.getElementById('app').innerHTML=`
-    <div class="h1">Article manager</div>
+    <div class="tabs">
+      <button class="tab" data-tab="companies">Prospects</button>
+      <button class="tab" data-tab="deals">Pipeline</button>
+      <button class="tab" data-tab="news">News</button>
+      <button class="btn ghost sm" id="t-out" style="margin-left:auto">Sign out</button>
+    </div>
+    <div id="content"><div class="note">Loading…</div></div>`;
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+  document.getElementById('t-out').onclick=signOut;
+}
+function switchTab(t){
+  TAB=t; closeDrawer();
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  if(t==='news') renderNews();
+  else if(t==='companies') renderCompanies();
+  else renderDeals();
+}
+
+/* ===================== PROSPECTS (companies) ===================== */
+function renderCompanies(){
+  content().innerHTML=`
+    <div class="h1">Prospect companies <span class="sub">demand side · sponsors to win</span></div>
+    <div class="tools">
+      <input class="q" id="c-q" placeholder="Search name / industry / notes / referrer…">
+      <select id="c-need"><option value="all">All needs</option>${opts(NEED,'')}</select>
+      <select id="c-src"><option value="all">All sources</option>${opts(SOURCE,'')}</select>
+      <button class="btn" id="c-go">Search</button>
+      <button class="btn ghost" id="c-new">+ New company</button>
+    </div>
+    <div id="c-list"><div class="note">Loading…</div></div>`;
+  document.getElementById('c-go').onclick=()=>{C_Q=document.getElementById('c-q').value.trim();C_NEED=document.getElementById('c-need').value;C_SRC=document.getElementById('c-src').value;loadCompanies();};
+  document.getElementById('c-q').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('c-go').click();});
+  document.getElementById('c-new').onclick=()=>openCompany(null);
+  document.getElementById('c-q').value=C_Q;document.getElementById('c-need').value=C_NEED;document.getElementById('c-src').value=C_SRC;
+  loadCompanies();
+}
+async function loadCompanies(){
+  const box=document.getElementById('c-list'); box.innerHTML='<div class="note">Loading…</div>';
+  let qy=supabase.from('companies').select('*, deals(id,stage,amount,currency)').order('created_at',{ascending:false});
+  if(C_NEED!=='all') qy=qy.eq('need_category',C_NEED);
+  if(C_SRC!=='all') qy=qy.eq('source',C_SRC);
+  if(C_Q){const w=C_Q.replace(/[,()*]/g,' ');qy=qy.or(`name.ilike.*${w}*,industry.ilike.*${w}*,notes.ilike.*${w}*,referrer.ilike.*${w}*`);}
+  const {data,error}=await qy;
+  if(error){box.innerHTML='<div class="note">Error: '+esc(error.message)+'</div>';return;}
+  if(!data.length){box.innerHTML='<div class="note">No companies yet. Click “+ New company”.</div>';return;}
+  // primary contacts in one round-trip
+  const cids=[...new Set(data.map(c=>c.primary_contact_id).filter(Boolean))];
+  let cmap={};
+  if(cids.length){const {data:cs}=await supabase.from('contacts').select('id,name,email,phone,title').in('id',cids); (cs||[]).forEach(c=>cmap[c.id]=c);}
+  box.innerHTML=data.map(c=>{
+    const pc=cmap[c.primary_contact_id];
+    const deals=c.deals||[]; const live=deals.filter(d=>d.stage!=='lost');
+    const top=live.sort((a,b)=>STAGES.indexOf(b.stage)-STAGES.indexOf(a.stage))[0];
+    return `<div class="row">
+      <div class="meta">
+        <div class="tt">${esc(c.name)}${c.website?` <a href="${esc(c.website)}" target="_blank" rel="noopener" style="font-size:11px">↗</a>`:''}</div>
+        <div class="mm">
+          ${c.need_category?`<span class="badge b-need" title="need category">${esc(c.need_category)}</span>`:''}
+          <span class="badge b-${c.source}">${esc(c.source)}</span>
+          ${c.industry?`<span>${esc(c.industry)}</span>`:''}
+          ${c.country?`· ${esc(countryName(c.country))}`:''}
+          ${pc?`· 👤 ${esc(pc.name||pc.email||'')}`:''}
+          ${c.referrer?`· ref: ${esc(c.referrer)}`:''}
+          · <b>${deals.length}</b> deal${deals.length===1?'':'s'}${top?` · <span class="badge b-${top.stage}">${esc(top.stage)}</span>`:''}
+        </div>
+      </div>
+      <div class="acts"><button class="btn ghost sm" data-c="${c.id}">Open</button></div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>openCompany(data.find(x=>x.id===b.dataset.c)));
+}
+
+async function openCompany(c){
+  C_EDIT=c||null; const isNew=!c;
+  let pc=null;
+  if(c&&c.primary_contact_id){const {data}=await supabase.from('contacts').select('*').eq('id',c.primary_contact_id).maybeSingle();pc=data;}
+  document.getElementById('d-title').textContent=isNew?'New prospect company':'Edit prospect';
+  c=c||{};
+  document.getElementById('d-body').innerHTML=`
+    <div class="sec">Company</div>
+    <div class="field"><label>Company name *</label><input id="f-name" value="${esc(c.name||'')}" placeholder="e.g. ASICS Europe"></div>
+    <div class="row2">
+      <div class="field"><label>Industry</label><input id="f-industry" value="${esc(c.industry||'')}" placeholder="Apparel, Finance…"></div>
+      <div class="field"><label>Company size</label><input id="f-size" value="${esc(c.size||'')}" placeholder="e.g. 500+"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Country</label><select id="f-country">${countryOptions(c.country||'')}</select></div>
+      <div class="field"><label>Website</label><input id="f-website" value="${esc(c.website||'')}" placeholder="https://…"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Need category</label><select id="f-need"><option value="">—</option>${opts(NEED,c.need_category||'')}</select></div>
+      <div class="field"><label>Source</label><select id="f-source">${opts(SOURCE,c.source||'direct')}</select></div>
+    </div>
+    <div class="field"><label>Referrer (紹介者)</label><input id="f-referrer" value="${esc(c.referrer||'')}" placeholder="Who introduced this prospect"></div>
+    <div class="field"><label>Notes</label><textarea id="f-notes">${esc(c.notes||'')}</textarea></div>
+
+    <div class="sec">Primary contact (担当者)</div>
+    <div class="row2">
+      <div class="field"><label>Name</label><input id="f-cname" value="${esc(pc?.name||'')}"></div>
+      <div class="field"><label>Title</label><input id="f-ctitle" value="${esc(pc?.title||'')}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Email</label><input id="f-cemail" value="${esc(pc?.email||'')}"></div>
+      <div class="field"><label>Phone</label><input id="f-cphone" value="${esc(pc?.phone||'')}"></div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="pbtn" id="f-save">${isNew?'Create company':'Save changes'}</button>
+      ${isNew?'':'<button class="btn red" id="f-del" style="flex:0 0 auto;padding:12px 16px">Delete</button>'}
+    </div>
+
+    ${isNew?'':`
+    <div class="sec">Deals</div>
+    <div id="f-deals"><div class="note" style="padding:10px">Loading…</div></div>
+    <button class="btn ghost sm" id="f-newdeal" style="margin-top:4px">+ New deal for this company</button>
+
+    <div class="sec">Activity log (やりとり)</div>
+    <div class="row2" style="grid-template-columns:120px 1fr">
+      <div class="field"><label>Type</label><select id="a-type">${opts(ACT,'memo')}</select></div>
+      <div class="field"><label>Date</label><input id="a-date" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+    </div>
+    <div class="field"><label>Note</label><textarea id="a-body" style="min-height:60px" placeholder="What happened…"></textarea></div>
+    <button class="btn ghost sm" id="a-add">Add to log</button>
+    <div class="actlog" id="a-log" style="margin-top:10px"></div>`}`;
+  document.getElementById('f-save').onclick=saveCompany;
+  if(!isNew){
+    document.getElementById('f-del').onclick=delCompany;
+    document.getElementById('f-newdeal').onclick=()=>openDeal(null,c.id);
+    document.getElementById('a-add').onclick=()=>addActivity({company_id:c.id});
+    loadCompanyDeals(c.id); loadActivities({company_id:c.id});
+  }
+  openDrawer();
+}
+async function loadCompanyDeals(cid){
+  const box=document.getElementById('f-deals'); if(!box)return;
+  const {data}=await supabase.from('deals').select('*, sponsorables(name)').eq('company_id',cid).order('updated_at',{ascending:false});
+  if(!data||!data.length){box.innerHTML='<div class="note" style="padding:8px">No deals yet.</div>';return;}
+  box.innerHTML=data.map(d=>`<div class="minirow"><div><div class="mn">${esc(d.sponsorables?.name||'—')}</div><div style="font-size:11px;color:var(--muted)">${d.amount?esc(money(d.currency,d.amount)):'no amount'}</div></div>
+    <div style="display:flex;gap:8px;align-items:center"><span class="badge b-${d.stage}">${esc(d.stage)}</span><button class="btn ghost sm" data-d="${d.id}">Open</button></div></div>`).join('');
+  box.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>openDeal(data.find(x=>x.id===b.dataset.d)));
+}
+async function saveCompany(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){toast('Company name required',true);return;}
+  const payload={name,
+    industry:document.getElementById('f-industry').value.trim()||null,
+    size:document.getElementById('f-size').value.trim()||null,
+    country:document.getElementById('f-country').value||null,
+    website:document.getElementById('f-website').value.trim()||null,
+    need_category:document.getElementById('f-need').value||null,
+    source:document.getElementById('f-source').value,
+    referrer:document.getElementById('f-referrer').value.trim()||null,
+    notes:document.getElementById('f-notes').value.trim()||null};
+  const contact={name:document.getElementById('f-cname').value.trim()||null,
+    title:document.getElementById('f-ctitle').value.trim()||null,
+    email:document.getElementById('f-cemail').value.trim()||null,
+    phone:document.getElementById('f-cphone').value.trim()||null};
+  const hasContact=contact.name||contact.email||contact.phone;
+  const btn=document.getElementById('f-save');btn.disabled=true;btn.textContent='Saving…';
+  try{
+    let companyId=C_EDIT?.id;
+    if(C_EDIT){
+      const {error}=await supabase.from('companies').update(payload).eq('id',C_EDIT.id); if(error)throw error;
+      if(C_EDIT.primary_contact_id){
+        await supabase.from('contacts').update(contact).eq('id',C_EDIT.primary_contact_id);
+      }else if(hasContact){
+        const {data:ct,error:e2}=await supabase.from('contacts').insert({...contact,belongs_to:'company',parent_id:C_EDIT.id}).select('id').single(); if(e2)throw e2;
+        await supabase.from('companies').update({primary_contact_id:ct.id}).eq('id',C_EDIT.id);
+      }
+    }else{
+      const {data:co,error}=await supabase.from('companies').insert({...payload,owner_id:SESSION.user.id}).select('id').single(); if(error)throw error;
+      companyId=co.id;
+      if(hasContact){
+        const {data:ct,error:e2}=await supabase.from('contacts').insert({...contact,belongs_to:'company',parent_id:companyId}).select('id').single(); if(e2)throw e2;
+        await supabase.from('companies').update({primary_contact_id:ct.id}).eq('id',companyId);
+      }
+    }
+    toast('Saved'); closeDrawer(); loadCompanies();
+  }catch(e){toast(e.message||'Error',true);}
+  btn.disabled=false;btn.textContent='Save changes';
+}
+async function delCompany(){
+  if(!confirm('Delete this company? Its deals will be unlinked (kept) and contact removed.'))return;
+  const {error}=await supabase.from('companies').delete().eq('id',C_EDIT.id);
+  if(error){toast(error.message,true);return;}
+  toast('Deleted'); closeDrawer(); loadCompanies();
+}
+
+/* ===================== PIPELINE (deals) ===================== */
+function renderDeals(){
+  content().innerHTML=`
+    <div class="h1">Pipeline <span class="sub">company × opening · proposal → contract at a glance</span></div>
+    <div class="tools">
+      <button class="btn ghost" id="d-new">+ New deal</button>
+      <span class="pinfo" id="d-count"></span>
+    </div>
+    <div class="board" id="d-board"><div class="note">Loading…</div></div>`;
+  document.getElementById('d-new').onclick=()=>openDeal(null);
+  loadDeals();
+}
+async function loadDeals(){
+  const board=document.getElementById('d-board');
+  const {data,error}=await supabase.from('deals').select('*, companies(name), sponsorables(name,type)').order('next_action_due',{ascending:true,nullsFirst:false});
+  if(error){board.innerHTML='<div class="note">Error: '+esc(error.message)+'</div>';return;}
+  document.getElementById('d-count').textContent=`${data.length} deals`;
+  const byStage={}; STAGES.forEach(s=>byStage[s]=[]);
+  data.forEach(d=>{(byStage[d.stage]||byStage.prospect).push(d);});
+  board.innerHTML=STAGES.map(s=>{
+    const items=byStage[s]; const sum=items.reduce((a,d)=>a+Number(d.amount||0),0);
+    return `<div class="col"><div class="ch"><span>${esc(STAGE_LABEL[s])}</span><span>${items.length}</span></div>
+      ${items.map(d=>`<div class="card" data-d="${d.id}">
+        <div class="cn">${esc(d.companies?.name||'(no company)')}</div>
+        <div class="cs">${esc(d.sponsorables?.name||'—')}</div>
+        ${d.amount?`<div class="cmt">${esc(money(d.currency,d.amount))}</div>`:''}
+        ${d.next_action_due?`<div class="due">⏰ ${esc(fd(d.next_action_due))}${d.next_action?' · '+esc(d.next_action):''}</div>`:''}
+      </div>`).join('')||'<div class="note" style="padding:6px;font-size:11px">—</div>'}
+    </div>`;
+  }).join('');
+  board.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>openDeal(data.find(x=>x.id===b.dataset.d)));
+}
+async function ensureLists(){
+  if(!LIST_COMPANIES.length){const {data}=await supabase.from('companies').select('id,name').order('name');LIST_COMPANIES=data||[];}
+  if(!LIST_SPONSORABLES.length){const {data}=await supabase.from('sponsorables').select('id,name,type').order('name');LIST_SPONSORABLES=data||[];}
+}
+async function openDeal(d,prefillCompany){
+  await ensureLists();
+  D_EDIT=d||null; const isNew=!d; d=d||{};
+  const coOpts='<option value="">— Select company —</option>'+LIST_COMPANIES.map(c=>`<option value="${c.id}"${(d.company_id||prefillCompany)===c.id?' selected':''}>${esc(c.name)}</option>`).join('');
+  const spOpts='<option value="">— Select opening —</option>'+LIST_SPONSORABLES.map(s=>`<option value="${s.id}"${d.sponsorable_id===s.id?' selected':''}>${esc(s.name)} (${esc(s.type)})</option>`).join('');
+  const dueVal=d.next_action_due?String(d.next_action_due).slice(0,10):'';
+  document.getElementById('d-title').textContent=isNew?'New deal':'Edit deal';
+  document.getElementById('d-body').innerHTML=`
+    <div class="sec">Deal</div>
+    <div class="field"><label>Company *</label><select id="g-co">${coOpts}</select></div>
+    <div class="field"><label>Opening (sponsorable)</label><select id="g-sp">${spOpts}</select></div>
+    <div class="row2">
+      <div class="field"><label>Stage</label><select id="g-stage">${opts(STAGES.map(s=>[s,STAGE_LABEL[s]]),d.stage||'prospect')}</select></div>
+      <div class="field"><label>Proposed tier</label><input id="g-tier" value="${esc(d.proposed_tier||'')}" placeholder="Title / Main / Support…"></div>
+    </div>
+    <div class="sec">Economics</div>
+    <div class="row3">
+      <div class="field"><label>Amount</label><input id="g-amount" type="number" value="${d.amount??''}" placeholder="0"></div>
+      <div class="field"><label>Currency</label><select id="g-cur">${opts(['JPY','USD','GBP','EUR'],d.currency||'JPY')}</select></div>
+      <div class="field"><label>TC fee %</label><input id="g-tcpct" type="number" value="${d.tc_fee_pct??20}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Agent fee %</label><input id="g-agpct" type="number" value="${d.agent_fee_pct??''}" placeholder="optional"></div>
+      <div class="field"><label>Payout basis</label><select id="g-basis">${opts([['initial_term','Initial term'],['every_year','Every year']],d.payout_basis||'initial_term')}</select></div>
+    </div>
+    <div class="econ" id="g-econ"></div>
+    <div class="sec">Next action</div>
+    <div class="row2">
+      <div class="field"><label>Action</label><input id="g-na" value="${esc(d.next_action||'')}" placeholder="e.g. Send proposal deck"></div>
+      <div class="field"><label>Due</label><input id="g-nad" type="date" value="${dueVal}"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="pbtn" id="g-save">${isNew?'Create deal':'Save changes'}</button>
+      ${isNew?'':'<button class="btn red" id="g-del" style="flex:0 0 auto;padding:12px 16px">Delete</button>'}
+    </div>
+    ${isNew?'':`
+    <div class="sec">Activity log (やりとり)</div>
+    <div class="row2" style="grid-template-columns:120px 1fr">
+      <div class="field"><label>Type</label><select id="a-type">${opts(ACT,'memo')}</select></div>
+      <div class="field"><label>Date</label><input id="a-date" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+    </div>
+    <div class="field"><label>Note</label><textarea id="a-body" style="min-height:60px" placeholder="What happened…"></textarea></div>
+    <button class="btn ghost sm" id="a-add">Add to log</button>
+    <div class="actlog" id="a-log" style="margin-top:10px"></div>`}`;
+  const econ=()=>{
+    const amt=Number(document.getElementById('g-amount').value||0);
+    const tc=Number(document.getElementById('g-tcpct').value||0);
+    const ag=Number(document.getElementById('g-agpct').value||0);
+    const cur=document.getElementById('g-cur').value;
+    const tcAmt=Math.round(amt*tc/100), agAmt=Math.round(amt*ag/100), net=tcAmt-agAmt;
+    document.getElementById('g-econ').innerHTML=`<div><span>TC fee (${tc||0}%)</span><b>${esc(money(cur,tcAmt))}</b></div>
+      <div><span>Agent payout (${ag||0}%)</span><b>${esc(money(cur,agAmt))}</b></div>
+      <div style="border-top:1px solid var(--line-2);margin-top:3px;padding-top:5px"><span>TC net</span><b>${esc(money(cur,net))}</b></div>`;
+  };
+  ['g-amount','g-tcpct','g-agpct','g-cur'].forEach(id=>document.getElementById(id).addEventListener('input',econ)); econ();
+  document.getElementById('g-save').onclick=saveDeal;
+  if(!isNew){
+    document.getElementById('g-del').onclick=delDeal;
+    document.getElementById('a-add').onclick=()=>addActivity({deal_id:d.id});
+    loadActivities({deal_id:d.id});
+  }
+  openDrawer();
+}
+async function saveDeal(){
+  const company_id=document.getElementById('g-co').value||null;
+  if(!company_id){toast('Company required',true);return;}
+  const num=id=>{const v=document.getElementById(id).value;return v===''?null:Number(v);};
+  const payload={company_id,
+    sponsorable_id:document.getElementById('g-sp').value||null,
+    stage:document.getElementById('g-stage').value,
+    proposed_tier:document.getElementById('g-tier').value.trim()||null,
+    amount:num('g-amount'), currency:document.getElementById('g-cur').value,
+    tc_fee_pct:num('g-tcpct')??20, agent_fee_pct:num('g-agpct'),
+    payout_basis:document.getElementById('g-basis').value,
+    next_action:document.getElementById('g-na').value.trim()||null,
+    next_action_due:document.getElementById('g-nad').value||null};
+  const btn=document.getElementById('g-save');btn.disabled=true;btn.textContent='Saving…';
+  let error;
+  if(D_EDIT){({error}=await supabase.from('deals').update(payload).eq('id',D_EDIT.id));}
+  else{({error}=await supabase.from('deals').insert({...payload,owner_id:SESSION.user.id}));}
+  btn.disabled=false;btn.textContent='Save changes';
+  if(error){toast(error.message,true);return;}
+  toast('Saved'); closeDrawer(); if(TAB==='deals')loadDeals(); else if(TAB==='companies')loadCompanies();
+}
+async function delDeal(){
+  if(!confirm('Delete this deal permanently?'))return;
+  const {error}=await supabase.from('deals').delete().eq('id',D_EDIT.id);
+  if(error){toast(error.message,true);return;}
+  toast('Deleted'); closeDrawer(); if(TAB==='deals')loadDeals(); else loadCompanies();
+}
+
+/* ===================== ACTIVITIES (shared) ===================== */
+async function loadActivities(parent){
+  const log=document.getElementById('a-log'); if(!log)return;
+  let qy=supabase.from('activities').select('*').order('occurred_on',{ascending:false}).order('created_at',{ascending:false});
+  qy=parent.company_id?qy.eq('company_id',parent.company_id):qy.eq('deal_id',parent.deal_id);
+  const {data}=await qy;
+  if(!data||!data.length){log.innerHTML='<div class="note" style="padding:8px;font-size:12px">No activity yet.</div>';return;}
+  log.innerHTML=data.map(a=>`<div class="actitem"><div class="am"><span class="badge b-${a.type||'memo'}" style="text-transform:uppercase">${esc(a.type||'memo')}</span><span>${esc(fd(a.occurred_on))}</span></div>${esc(a.body||'').replace(/\n/g,'<br>')}</div>`).join('');
+}
+async function addActivity(parent){
+  const body=document.getElementById('a-body').value.trim();
+  if(!body){toast('Write a note first',true);return;}
+  const rec={...parent,type:document.getElementById('a-type').value,occurred_on:document.getElementById('a-date').value||new Date().toISOString().slice(0,10),body,user_id:SESSION.user.id};
+  const {error}=await supabase.from('activities').insert(rec);
+  if(error){toast(error.message,true);return;}
+  document.getElementById('a-body').value=''; toast('Logged'); loadActivities(parent);
+}
+
+/* ===================== NEWS (article manager) ===================== */
+function renderNews(){
+  content().innerHTML=`
+    <div class="h1">Article manager <span class="sub">public news feed</span></div>
     <div class="tools">
       <input class="q" id="t-q" placeholder="Search title / author / sponsor…">
       <select id="t-status">
-        <option value="all">All statuses</option>
-        <option value="published">Published</option>
-        <option value="hidden">Hidden</option>
-        <option value="draft">Draft</option>
-        <option value="scheduled">Scheduled</option>
+        <option value="all">All statuses</option><option value="published">Published</option>
+        <option value="hidden">Hidden</option><option value="draft">Draft</option><option value="scheduled">Scheduled</option>
       </select>
       <button class="btn" id="t-go">Search</button>
-      <button class="btn ghost" id="t-out">Sign out</button>
     </div>
     <div id="list"><div class="note">Loading…</div></div>
     <div class="pager" id="pager"></div>`;
-  document.getElementById('t-go').onclick=()=>{Q=document.getElementById('t-q').value.trim();STATUS=document.getElementById('t-status').value;PAGE=0;load();};
+  document.getElementById('t-go').onclick=()=>{N_Q=document.getElementById('t-q').value.trim();N_STATUS=document.getElementById('t-status').value;N_PAGE=0;loadNews();};
   document.getElementById('t-q').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('t-go').click();});
-  document.getElementById('t-out').onclick=signOut;
+  document.getElementById('t-q').value=N_Q;document.getElementById('t-status').value=N_STATUS;
+  loadNews();
 }
-
-async function load(){
+async function loadNews(){
   const list=document.getElementById('list'); list.innerHTML='<div class="note">Loading…</div>';
   let qy=supabase.from('news_posts').select('*',{count:'exact'}).order('published_at',{ascending:false,nullsFirst:false}).order('created_at',{ascending:false});
-  if(STATUS!=='all') qy=qy.eq('status',STATUS);
-  if(Q){const w=Q.replace(/[,()*]/g,' ');qy=qy.or(`title.ilike.*${w}*,author_name.ilike.*${w}*,sponsor_name.ilike.*${w}*`);}
-  qy=qy.range(PAGE*PER, PAGE*PER+PER-1);
+  if(N_STATUS!=='all') qy=qy.eq('status',N_STATUS);
+  if(N_Q){const w=N_Q.replace(/[,()*]/g,' ');qy=qy.or(`title.ilike.*${w}*,author_name.ilike.*${w}*,sponsor_name.ilike.*${w}*`);}
+  qy=qy.range(N_PAGE*PER, N_PAGE*PER+PER-1);
   const {data,error,count}=await qy;
-  if(error){list.innerHTML='<div class="note">Error: '+error.message+'</div>';return;}
+  if(error){list.innerHTML='<div class="note">Error: '+esc(error.message)+'</div>';return;}
   if(!data.length){list.innerHTML='<div class="note">No posts found.</div>';renderPager(0);return;}
   list.innerHTML=data.map(n=>`
     <div class="row">
@@ -175,29 +551,27 @@ async function load(){
         ${n.status==='published'?`<button class="btn ghost sm" data-hide="${n.id}">Hide</button>`:`<button class="btn sm" data-pub="${n.id}">Publish</button>`}
       </div>
     </div>`).join('');
-  list.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openDrawer(data.find(x=>x.id===b.dataset.edit)));
+  list.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openNews(data.find(x=>x.id===b.dataset.edit)));
   list.querySelectorAll('[data-hide]').forEach(b=>b.onclick=()=>quickStatus(b.dataset.hide,'hidden'));
   list.querySelectorAll('[data-pub]').forEach(b=>b.onclick=()=>quickStatus(b.dataset.pub,'published'));
   renderPager(count||0);
 }
 function renderPager(count){
   const pages=Math.max(1,Math.ceil(count/PER));
-  document.getElementById('pager').innerHTML=`<button class="btn ghost sm" id="pp" ${PAGE===0?'disabled':''}>← Prev</button>
-    <span class="pinfo">Page ${PAGE+1} / ${pages} · ${count} posts</span>
-    <button class="btn ghost sm" id="pn" ${PAGE>=pages-1?'disabled':''}>Next →</button>`;
+  document.getElementById('pager').innerHTML=`<button class="btn ghost sm" id="pp" ${N_PAGE===0?'disabled':''}>← Prev</button>
+    <span class="pinfo">Page ${N_PAGE+1} / ${pages} · ${count} posts</span>
+    <button class="btn ghost sm" id="pn" ${N_PAGE>=pages-1?'disabled':''}>Next →</button>`;
   const pp=document.getElementById('pp'),pn=document.getElementById('pn');
-  if(pp)pp.onclick=()=>{if(PAGE>0){PAGE--;load();}};
-  if(pn)pn.onclick=()=>{if(PAGE<pages-1){PAGE++;load();}};
+  if(pp)pp.onclick=()=>{if(N_PAGE>0){N_PAGE--;loadNews();}};
+  if(pn)pn.onclick=()=>{if(N_PAGE<pages-1){N_PAGE++;loadNews();}};
 }
 async function quickStatus(id,status){
   const patch={status}; if(status==='published') patch.published_at=new Date().toISOString();
   const {error}=await supabase.from('news_posts').update(patch).eq('id',id);
-  if(error){toast(error.message,true);return;} toast(status==='published'?'Published':'Hidden'); load();
+  if(error){toast(error.message,true);return;} toast(status==='published'?'Published':'Hidden'); loadNews();
 }
-
-/* ---- editor drawer ---- */
-function openDrawer(n){
-  EDIT=n; IMG=n.image_url||null;
+function openNews(n){
+  N_EDIT=n; IMG=n.image_url||null;
   document.getElementById('d-title').textContent='Edit post';
   const sched=(n.status==='scheduled'&&n.published_at)?(()=>{const d=new Date(n.published_at);return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16);})():'';
   document.getElementById('d-body').innerHTML=`
@@ -240,11 +614,10 @@ function openDrawer(n){
   document.getElementById('e-stockbtn').onclick=()=>searchStock('tennis');
   document.getElementById('e-clearimg').onclick=()=>{IMG=null;const p=document.getElementById('e-imgprev');p.style.display='none';document.getElementById('e-imgurl').value='';};
   document.getElementById('e-imgurl').addEventListener('input',e=>{IMG=e.target.value.trim()||null;const p=document.getElementById('e-imgprev');if(IMG){p.src=IMG;p.style.display='block';}else p.style.display='none';});
-  document.getElementById('e-save').onclick=saveEdit;
-  document.getElementById('e-del').onclick=delEdit;
-  document.getElementById('drawer').classList.add('on');document.getElementById('scrim').classList.add('on');
+  document.getElementById('e-save').onclick=saveNews;
+  document.getElementById('e-del').onclick=delNews;
+  openDrawer();
 }
-function closeDrawer(){document.getElementById('drawer').classList.remove('on');document.getElementById('scrim').classList.remove('on');EDIT=null;}
 function setImg(url){IMG=url;const p=document.getElementById('e-imgprev');p.src=url;p.style.display='block';document.getElementById('e-imgurl').value=url;}
 async function onUpload(e){
   const f=e.target.files[0]; if(!f)return;
@@ -264,7 +637,7 @@ async function searchStock(q){
     grid.querySelectorAll('img').forEach(im=>im.onclick=()=>{setImg(im.dataset.full);toast('Photo selected');});
   }catch(e){grid.innerHTML='<div class="note" style="padding:10px">Error</div>';}
 }
-async function saveEdit(){
+async function saveNews(){
   const patch={
     title:document.getElementById('e-title').value.trim(),
     author_name:document.getElementById('e-author').value.trim()||null,
@@ -273,23 +646,26 @@ async function saveEdit(){
     country:document.getElementById('e-country').value.trim().toUpperCase()||null,
     link_url:document.getElementById('e-link').value.trim()||null,
     body:document.getElementById('e-body').value,
-    image_url:IMG,
-    status:document.getElementById('e-status').value,
+    image_url:IMG, status:document.getElementById('e-status').value,
   };
   if(patch.status==='scheduled'){const v=document.getElementById('e-when').value; if(v) patch.published_at=new Date(v).toISOString();}
-  if(patch.status==='published' && (EDIT.status!=='published')) patch.published_at=new Date().toISOString();
+  if(patch.status==='published' && (N_EDIT.status!=='published')) patch.published_at=new Date().toISOString();
   const btn=document.getElementById('e-save');btn.disabled=true;btn.textContent='Saving…';
-  const {error}=await supabase.from('news_posts').update(patch).eq('id',EDIT.id);
+  const {error}=await supabase.from('news_posts').update(patch).eq('id',N_EDIT.id);
   btn.disabled=false;btn.textContent='Save changes';
   if(error){toast(error.message,true);return;}
-  toast('Saved'); closeDrawer(); load();
+  toast('Saved'); closeDrawer(); loadNews();
 }
-async function delEdit(){
+async function delNews(){
   if(!confirm('Delete this post permanently?'))return;
-  const {error}=await supabase.from('news_posts').delete().eq('id',EDIT.id);
+  const {error}=await supabase.from('news_posts').delete().eq('id',N_EDIT.id);
   if(error){toast(error.message,true);return;}
-  toast('Deleted'); closeDrawer(); load();
+  toast('Deleted'); closeDrawer(); loadNews();
 }
+
+/* ===================== drawer open/close ===================== */
+function openDrawer(){document.getElementById('drawer').classList.add('on');document.getElementById('scrim').classList.add('on');}
+function closeDrawer(){document.getElementById('drawer').classList.remove('on');document.getElementById('scrim').classList.remove('on');N_EDIT=C_EDIT=D_EDIT=null;}
 window.closeDrawer=closeDrawer;
 init();
 </script>
