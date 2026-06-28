@@ -169,7 +169,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 
 <script src="./shared/config.js"></script>
 <script type="module">
-import { supabase, requireConfig, countryName, markBrand, countryOptions } from "./shared/supabase.js";
+import { supabase, requireConfig, countryName, markBrand, countryOptions } from "./shared/supabase.js?v=3";
 window.gtsSearch=(e)=>{e.preventDefault();const v=e.target.querySelector('input').value.trim();location.href='./index.html'+(v?('?q='+encodeURIComponent(v)):'');return false;};
 const TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'local';
 const PEXELS=(window.GTS_CONFIG||{}).PEXELS_API_KEY||'';
