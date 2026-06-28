@@ -259,6 +259,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
         <div class="fl">Brands, tournaments, federations and circuits — tell us a little and we'll take it from there.</div>
         <div class="field"><label>Organisation</label><input id="c-company" placeholder="Company / federation / event"></div>
         <div class="field"><label>Your name</label><input id="c-name" placeholder="e.g. Marie Dubois"></div>
+        <div class="field"><label>Website / link (optional)</label><input id="c-url" placeholder="https://…"></div>
         <div class="field"><label>Country</label><select id="c-country"></select></div>
         <div class="field"><label>Any requests? (optional)</label><textarea id="c-msg" placeholder="Anything you'd like us to know — optional"></textarea></div>
         <div class="field"><label>Contact email</label><input id="c-email" type="email" placeholder="you@org.com"></div>
@@ -381,13 +382,15 @@ async function submitConsult(){
   const co=document.getElementById('c-company').value.trim();
   if(!co){toast('Please enter your organisation',true);return;}
   const nm=document.getElementById('c-name').value.trim();
+  const url=document.getElementById('c-url').value.trim();
   let msg=document.getElementById('c-msg').value.trim();
   if(nm) msg=(msg?msg+'\n':'')+'Contact: '+nm;
+  if(url) msg=(msg?msg+'\n':'')+'Link: '+url;
   const btn=document.getElementById('c-btn');btn.disabled=true;btn.textContent='Sending…';
   const {error}=await supabase.rpc('submit_consult_request',{p_company:co,p_country:document.getElementById('c-country').value,p_goal:'',p_message:msg,p_email:document.getElementById('c-email').value.trim()});
   btn.disabled=false;btn.textContent='Send';
   if(error){toast('Error: '+error.message,true);return;}
-  toast('Thanks — we\'ll be in touch!');['c-company','c-name','c-msg','c-email'].forEach(id=>document.getElementById(id).value='');document.getElementById('c-country').value='';
+  toast('Thanks — we\'ll be in touch!');['c-company','c-name','c-url','c-msg','c-email'].forEach(id=>document.getElementById(id).value='');document.getElementById('c-country').value='';
 }
 document.getElementById('a-country').innerHTML=countryOptions('');
 document.getElementById('c-country').innerHTML=countryOptions('');
