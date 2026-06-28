@@ -245,23 +245,23 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
     </div>
     <div class="twocol">
       <form class="fcard" id="apply" onsubmit="return false">
-        <h3>Get sponsors for your team</h3>
-        <span class="priv">🔒 Private — never shown publicly</span>
-        <div class="fl">Players, clubs and tournaments: tell us about you and we'll go find sponsors. Only published wins are ever public.</div>
+        <h3>Get sponsors</h3>
+        <div class="fl">Players, clubs and tournaments — tell us about you and we'll go find sponsors for you.</div>
         <div class="field"><label>You are a…</label><select id="a-type"><option value="player">Player</option><option value="club">Club</option><option value="tournament">Tournament</option><option value="other">Other</option></select></div>
-        <div class="field"><label>Name</label><input id="a-name" placeholder="e.g. Yuki Nakamura"></div>
-        <div class="field"><label>Country</label><input id="a-country" maxlength="2" placeholder="ISO, e.g. JP"></div>
-        <div class="field"><label>Your reach / what a sponsor would get</label><textarea id="a-reach" placeholder="Ranking, audience, events, social reach…"></textarea></div>
+        <div class="field"><label>Name</label><input id="a-name" placeholder="e.g. Lucas Moreau / Madrid Tennis Club"></div>
+        <div class="field"><label>Country</label><select id="a-country"></select></div>
+        <div class="field"><label>About you (tournament / club / player)</label><textarea id="a-reach" placeholder="Ranking, audience, events, members, social reach…"></textarea></div>
+        <div class="field"><label>Website / link (optional)</label><input id="a-url" placeholder="https://…"></div>
         <div class="field"><label>Contact email</label><input id="a-email" type="email" placeholder="you@example.com"></div>
         <button class="pbtn" id="a-btn">Request sponsors</button>
       </form>
       <form class="fcard" id="consult" onsubmit="return false">
         <h3>Become a sponsor / partner with us</h3>
-        <div class="fl">Brands, tournaments, federations and circuits — tell us your goal and we'll take it from there.</div>
+        <div class="fl">Brands, tournaments, federations and circuits — tell us a little and we'll take it from there.</div>
         <div class="field"><label>Organisation</label><input id="c-company" placeholder="Company / federation / event"></div>
-        <div class="field"><label>Country</label><input id="c-country" maxlength="2" placeholder="ISO, e.g. JP"></div>
-        <div class="field"><label>What's your goal?</label><select id="c-goal"><option value="A">A · Sales &amp; leads</option><option value="B">B · Brand &amp; trust</option><option value="C">C · People &amp; recruiting</option><option value="D">D · Milestone</option></select></div>
-        <div class="field"><label>Anything specific?</label><textarea id="c-msg" placeholder="Budget range, audience, an event/player you like…"></textarea></div>
+        <div class="field"><label>Your name</label><input id="c-name" placeholder="e.g. Marie Dubois"></div>
+        <div class="field"><label>Country</label><select id="c-country"></select></div>
+        <div class="field"><label>Any requests? (optional)</label><textarea id="c-msg" placeholder="Anything you'd like us to know — optional"></textarea></div>
         <div class="field"><label>Contact email</label><input id="c-email" type="email" placeholder="you@org.com"></div>
         <button class="pbtn" id="c-btn">Send</button>
       </form>
@@ -278,7 +278,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.75) 52%)
 
 <script src="./shared/config.js"></script>
 <script type="module">
-import { supabase, requireConfig, countryName, newsThumb, markBrand } from "./shared/supabase.js?v=4";
+import { supabase, requireConfig, countryName, newsThumb, markBrand, countryOptions } from "./shared/supabase.js?v=4";
 const TYPE_LABEL={player:"Player",club:"Club",tournament:"Tournament",other:"Other",operator:"Editorial"};
 let toTimer;
 function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast on'+(err?' err':'');clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2600);}
@@ -368,22 +368,30 @@ async function submitApply(){
   if(!requireConfig())return;
   const name=document.getElementById('a-name').value.trim();
   if(!name){toast('Please enter a name',true);return;}
+  const url=document.getElementById('a-url').value.trim();
+  let reach=document.getElementById('a-reach').value.trim();
+  if(url) reach=(reach?reach+'\n':'')+'Link: '+url;
   const btn=document.getElementById('a-btn');btn.disabled=true;btn.textContent='Sending…';
-  const {error}=await supabase.rpc('submit_sponsor_application',{p_type:document.getElementById('a-type').value,p_name:name,p_country:document.getElementById('a-country').value.trim().toUpperCase(),p_reach:document.getElementById('a-reach').value,p_email:document.getElementById('a-email').value.trim()});
+  const {error}=await supabase.rpc('submit_sponsor_application',{p_type:document.getElementById('a-type').value,p_name:name,p_country:document.getElementById('a-country').value,p_reach:reach,p_email:document.getElementById('a-email').value.trim()});
   btn.disabled=false;btn.textContent='Request sponsors';
   if(error){toast('Error: '+error.message,true);return;}
-  toast('Got it — we\'ll be in touch privately.');['a-name','a-country','a-reach','a-email'].forEach(id=>document.getElementById(id).value='');
+  toast('Got it — we\'ll be in touch soon.');['a-name','a-reach','a-url','a-email'].forEach(id=>document.getElementById(id).value='');document.getElementById('a-country').value='';
 }
 async function submitConsult(){
   if(!requireConfig())return;
   const co=document.getElementById('c-company').value.trim();
   if(!co){toast('Please enter your organisation',true);return;}
+  const nm=document.getElementById('c-name').value.trim();
+  let msg=document.getElementById('c-msg').value.trim();
+  if(nm) msg=(msg?msg+'\n':'')+'Contact: '+nm;
   const btn=document.getElementById('c-btn');btn.disabled=true;btn.textContent='Sending…';
-  const {error}=await supabase.rpc('submit_consult_request',{p_company:co,p_country:document.getElementById('c-country').value.trim().toUpperCase(),p_goal:document.getElementById('c-goal').value,p_message:document.getElementById('c-msg').value,p_email:document.getElementById('c-email').value.trim()});
+  const {error}=await supabase.rpc('submit_consult_request',{p_company:co,p_country:document.getElementById('c-country').value,p_goal:'',p_message:msg,p_email:document.getElementById('c-email').value.trim()});
   btn.disabled=false;btn.textContent='Send';
   if(error){toast('Error: '+error.message,true);return;}
-  toast('Thanks — we\'ll be in touch!');['c-company','c-country','c-msg','c-email'].forEach(id=>document.getElementById(id).value='');
+  toast('Thanks — we\'ll be in touch!');['c-company','c-name','c-msg','c-email'].forEach(id=>document.getElementById(id).value='');document.getElementById('c-country').value='';
 }
+document.getElementById('a-country').innerHTML=countryOptions('');
+document.getElementById('c-country').innerHTML=countryOptions('');
 document.getElementById('a-btn').onclick=submitApply;
 document.getElementById('c-btn').onclick=submitConsult;
 load();
