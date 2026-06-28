@@ -131,7 +131,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 
 <script src="./shared/config.js"></script>
 <script type="module">
-import { supabase, requireConfig, countryName, newsThumb, markBrand } from "./shared/supabase.js?v=3";
+import { supabase, requireConfig, countryName, newsThumb, markBrand } from "./shared/supabase.js?v=4";
 const TYPELABEL={player:"Player",club:"Club",tournament:"Tournament",operator:"GetTennisSponsors (editorial)",other:"Member"};
 let toTimer;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.className='toast on';clearTimeout(toTimer);toTimer=setTimeout(()=>t.className='toast',2000);}

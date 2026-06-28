@@ -87,6 +87,20 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 .bpav img{width:100%;height:100%;object-fit:cover;}
 .bpn{font-weight:800;font-size:14px;}
 .bpb{font-size:12.5px;color:#566;line-height:1.6;margin-top:2px;}
+.ppwrap{margin:16px 0 4px;}
+.pplabel{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.ppcard{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;max-width:430px;box-shadow:0 1px 2px rgba(20,40,30,.05);}
+.ppimg{height:184px;background:#0A3A27 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#6f8a7c;font-size:12px;}
+.ppimg.has{color:transparent;}
+.ppbody{padding:13px 15px 16px;}
+.ppcat{font-family:"Roboto Mono";font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);}
+.pptitle{font-size:17px;font-weight:900;line-height:1.3;margin:6px 0 9px;}
+.pptitle .brand,.pptext .brand{background:#eef7c9;color:var(--green-3);padding:0 2px;border-radius:3px;font-weight:900;}
+.ppby{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.ppav{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;background-size:cover;background-position:center;flex:0 0 auto;}
+.ppn{font-size:12.5px;font-weight:800;}
+.ppmeta{font-size:11px;color:var(--muted);}
+.pptext{font-size:12.5px;color:#566;line-height:1.6;}
 .imgprev{width:100%;max-height:200px;object-fit:cover;border-radius:10px;border:1px solid var(--line-2);margin-top:8px;display:none;}
 .hint{font-size:11.5px;color:var(--muted);margin-top:5px;}
 .benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:10px;}
@@ -169,7 +183,7 @@ mark.brand{background:linear-gradient(transparent 52%, rgba(200,220,43,.8) 52%);
 
 <script src="./shared/config.js"></script>
 <script type="module">
-import { supabase, requireConfig, countryName, markBrand, countryOptions } from "./shared/supabase.js?v=3";
+import { supabase, requireConfig, countryName, markBrand, countryOptions } from "./shared/supabase.js?v=4";
 window.gtsSearch=(e)=>{e.preventDefault();const v=e.target.querySelector('input').value.trim();location.href='./index.html'+(v?('?q='+encodeURIComponent(v)):'');return false;};
 const TZ=Intl.DateTimeFormat().resolvedOptions().timeZone||'local';
 const PEXELS=(window.GTS_CONFIG||{}).PEXELS_API_KEY||'';
@@ -300,6 +314,18 @@ function renderStudio(){
       <div class="field" id="n-when-wrap" style="display:none"><label>Publish at (your time · ${esc(TZ)})</label><input id="n-when" type="datetime-local"></div>
     </div>
     <div class="hint" id="n-when-hint"></div>
+    <div class="ppwrap">
+      <div class="pplabel">Live preview — how your news will look</div>
+      <article class="ppcard">
+        <div class="ppimg" id="pp-img"><span>Image preview</span></div>
+        <div class="ppbody">
+          <div class="ppcat" id="pp-cat">News</div>
+          <h3 class="pptitle" id="pp-title"></h3>
+          <div class="ppby"><div class="ppav" id="pp-av"></div><div><div class="ppn" id="pp-name">You</div><div class="ppmeta" id="pp-meta"></div></div></div>
+          <div class="pptext" id="pp-text"></div>
+        </div>
+      </article>
+    </div>
     <div style="display:flex;gap:8px;margin-top:8px">
       <button class="pbtn" id="n-btn">Publish</button>
       <button class="btn ghost" id="n-cancel" style="display:none">Cancel edit</button>
@@ -323,7 +349,32 @@ function renderStudio(){
   const sb=document.getElementById('n-stockbtn'); if(sb) sb.onclick=openStock;
   document.getElementById('n-btn').onclick=savePost;
   document.getElementById('n-cancel').onclick=()=>{EDIT_ID=null;clearForm();};
+  ['n-title','n-sponsor','n-body'].forEach(id=>document.getElementById(id).addEventListener('input',renderPostPreview));
+  document.getElementById('n-atype').addEventListener('change',renderPostPreview);
+  document.getElementById('n-when').addEventListener('input',renderPostPreview);
+  renderPostPreview();
   loadMine();
+}
+const CATLABEL={tournament:'Tournament',club:'Club',player:'Player',other:'News'};
+function renderPostPreview(){
+  const g=id=>document.getElementById(id); if(!g('pp-title'))return;
+  const title=g('n-title').value.trim(), sponsor=g('n-sponsor').value.trim(), body=g('n-body').value.trim();
+  g('pp-cat').textContent=CATLABEL[g('n-atype').value]||'News';
+  g('pp-title').innerHTML=title?markBrand(title,sponsor):'<span style="opacity:.4">Your headline appears here</span>';
+  g('pp-text').innerHTML=body?markBrand(body.slice(0,180),sponsor).replace(/\n/g,' ')+(body.length>180?'…':''):'';
+  const img=g('pp-img');
+  if(NEWS_IMG){img.style.backgroundImage=`url('${NEWS_IMG}')`;img.classList.add('has');img.innerHTML='';}
+  else{img.style.backgroundImage='';img.classList.remove('has');img.innerHTML='<span>Image preview</span>';}
+  const name=(PROFILE?.display_name||'You').trim()||'You';
+  g('pp-name').textContent=name;
+  const av=g('pp-av');
+  if(PROFILE?.avatar_url){av.style.backgroundImage=`url('${PROFILE.avatar_url}')`;av.textContent='';}
+  else{av.style.backgroundImage='';av.textContent=name.charAt(0).toUpperCase();}
+  const vis=g('n-vis').value;
+  let meta='Publishes now';
+  if(vis==='draft')meta='Draft — not public';
+  else if(vis==='schedule'){const v=g('n-when').value;meta=v?('Scheduled · '+new Date(v).toLocaleString()):'Scheduled for later';}
+  g('pp-meta').textContent=meta;
 }
 function renderBioPreview(){
   const box=document.getElementById('bioprev'); if(!box)return;
@@ -340,7 +391,7 @@ function renderBioPreview(){
 window.onVis=()=>{const v=document.getElementById('n-vis').value;
   document.getElementById('n-when-wrap').style.display=v==='schedule'?'block':'none';
   document.getElementById('n-btn').textContent=v==='draft'?'Save draft':(v==='schedule'?'Schedule':'Publish');
-  updateWhenHint();};
+  updateWhenHint();renderPostPreview();};
 function updateWhenHint(){const v=document.getElementById('n-vis').value;const h=document.getElementById('n-when-hint');
   if(v!=='schedule'){h.textContent='';return;}
   const val=document.getElementById('n-when').value;
@@ -380,7 +431,7 @@ async function onImage(e){
   const {data}=supabase.storage.from('news-images').getPublicUrl(path);
   NEWS_IMG=data.publicUrl;
   const prev=document.getElementById('n-imgprev'); prev.src=NEWS_IMG; prev.style.display='block';
-  toast('Image attached');
+  renderPostPreview(); toast('Image attached');
 }
 
 /* ---- stock photo picker (Pexels) ---- */
@@ -399,7 +450,7 @@ async function searchStock(q){
     grid.innerHTML=photos.map(p=>`<img src="${esc(p.src.medium)}" data-full="${esc(p.src.landscape||p.src.large)}" alt="">`).join('');
     grid.querySelectorAll('img').forEach(im=>im.onclick=()=>{NEWS_IMG=im.dataset.full;
       const pv=document.getElementById('n-imgprev'); pv.src=NEWS_IMG; pv.style.display='block';
-      closeStock(); toast('Photo selected');});
+      closeStock(); renderPostPreview(); toast('Photo selected');});
   }catch(e){grid.innerHTML='<div class="who" style="padding:10px">Error: '+e.message+'</div>';}
 }
 
@@ -424,7 +475,7 @@ function clearForm(){['n-title','n-sponsor','n-link','n-body'].forEach(id=>{cons
   NEWS_IMG=null; const pv=document.getElementById('n-imgprev'); if(pv){pv.style.display='none';pv.src='';}
   document.getElementById('n-vis').value='now'; onVis();
   document.getElementById('form-title').textContent='Post news';
-  document.getElementById('n-cancel').style.display='none';}
+  document.getElementById('n-cancel').style.display='none';renderPostPreview();}
 async function savePost(){
   const title=document.getElementById('n-title').value.trim();
   const author=(PROFILE?.display_name||'').trim();
